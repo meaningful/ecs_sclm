@@ -17,6 +17,11 @@ from .. import settings as filer_settings
 from ..utils.compatibility import python_2_unicode_compatible
 
 
+from django.utils import six
+import logging
+logger = logging.getLogger(__name__)
+from easy_thumbnails.fields import ThumbnailerImageField
+
 class FolderManager(models.Manager):
     def with_bad_metadata(self):
         return self.get_query_set().filter(has_all_mandatory_data=False)
@@ -82,7 +87,6 @@ class FolderPermissionManager(models.Manager):
         # Deny has precedence over allow
         return allow_list - deny_list
 
-
 @python_2_unicode_compatible
 class Folder(models.Model, mixins.IconsMixin):
     """
@@ -102,10 +106,12 @@ class Folder(models.Model, mixins.IconsMixin):
     parent = models.ForeignKey('self', verbose_name=('parent'), null=True, blank=True,
                                related_name='children')
     name = models.CharField(_('name'), max_length=255)
+    # name = models.CharField((u'文件名'), max_length=255)
 
     owner = models.ForeignKey(getattr(settings, 'AUTH_USER_MODEL', 'auth.User'), verbose_name=_('owner'),
                               related_name='filer_owned_folders', on_delete=models.SET_NULL,
                               null=True, blank=True)
+
 
     uploaded_at = models.DateTimeField(_('uploaded at'), auto_now_add=True)
  
@@ -116,7 +122,9 @@ class Folder(models.Model, mixins.IconsMixin):
     #add
     description = models.TextField(null=True, blank=True,
         verbose_name=_(u' 描述信息'))
-    diricon = models.ImageField(upload_to='img/', null=True, blank=True,verbose_name=(u'目录图标'))
+    # diricon = models.ImageField(upload_to='img/', null=True, blank=True,verbose_name=(u'目录图标'))
+    # diricon = ThumbnailerImageField(upload_to='img/', resize_source=dict(size=(40, 40)), null=True, blank=True,verbose_name=(u'目录图标'))
+    diricon = ThumbnailerImageField(upload_to='img/', null=True, blank=True,verbose_name=(u'目录图标'))
 
     @property
     def file_count(self):
@@ -205,6 +213,9 @@ class Folder(models.Model, mixins.IconsMixin):
     def get_childfile_read(self, **kw):
         from .filemodels import File, FilePermission
         files=set()
+        # if kw.has_key('user'):
+        #     hasuser = kw['user']
+        #     if hasuser.is_superuser:
         if self.file_count !=0:
             if self.all_files.filter(ispublic=True).count():
                ispublic_files = self.all_files.filter(ispublic=True)
@@ -212,8 +223,10 @@ class Folder(models.Model, mixins.IconsMixin):
             if kw.has_key('user'):
                 hasuser=kw['user']
                 filelist = FilePermission.objects.get_read_id_list(hasuser)
-                for onefile in filelist:
-                    files.add(File.objects.get(id=onefile))
+                for onefile in self.files:
+                    if onefile.id in filelist:
+                        # files.add(File.objects.get(id=onefile))
+                        files.add(onefile)
         return files
 
     def get_childfolder_read(self, user):
@@ -281,11 +294,38 @@ class Folder(models.Model, mixins.IconsMixin):
         except Folder.DoesNotExist:
             return False
 
-
     @property
     def icons(self):
-        from ..fields.image import FilerImageField
-        pass
+        # from ..fields.image import FilerImageField
+        # pass
+        required_thumbnails = dict(
+            (size, {'size': (int(size), int(size)),
+                    'crop': True,
+                    'upscale': True,
+                    # 'subject_location': self.subject_location
+            })
+            for size in filer_settings.FILER_ADMIN_ICON_SIZES)
+        return self._generate_thumbnails(required_thumbnails)
+
+    def _generate_thumbnails(self, required_thumbnails):
+        _thumbnails = {}
+        for name, opts in six.iteritems(required_thumbnails):
+            try:
+                # opts.update({'subject_location': self.subject_location})
+                thumb = self.diricon.file.get_thumbnail(opts)
+                _thumbnails[name] = thumb.url
+            except Exception as e:
+                # catch exception and manage it. We can re-raise it for debugging
+                # purposes and/or just logging it, provided user configured
+                # proper logging configuration
+                if filer_settings.FILER_ENABLE_LOGGING:
+                    logger.error('Error while generating thumbnail: %s', e)
+                if filer_settings.FILER_DEBUG:
+                    raise
+        return _thumbnails
+
+
+
 
     class Meta(object):
         unique_together = (('parent', 'name'),)
@@ -294,7 +334,8 @@ class Folder(models.Model, mixins.IconsMixin):
                         "Can use directory listing"),)
         app_label = 'filer'
         verbose_name = _("Folder")
-        verbose_name_plural = _("Folders")
+        # verbose_name_plural = _("Folders")
+        verbose_name_plural = (u'知识库')
 
 # MPTT registration
 try:

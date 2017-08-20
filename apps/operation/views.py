@@ -1,14 +1,25 @@
+# -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 import re
 from django.http import HttpResponse
-from django.shortcuts import render
 from filer.models import File, Folder, FolderRoot
 from django.contrib.auth.models import User, Group
 from django.contrib.auth import authenticate, login
 from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404, render
 import json
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+from django.shortcuts import render, render_to_response, get_object_or_404
+from django.http import HttpResponse,HttpResponseRedirect
+from filer.models import File, Folder, FolderRoot
+from django.http import HttpResponseRedirect
+from django.template import RequestContext
+from django import forms
+from models import SclMUser
+from yunpian.SmsOperator import SmsOperator
+import sys
+import random
+
+APIKEY = '7d30dd097278b7a073e99d548aa54c1d'
 
 
 def index(request):
@@ -122,4 +133,111 @@ def directory_listing(request, folder_id=None):
             'folder_files': filelist,
         })
         return render(request, 'operation/directory_listing.html', context)
+
+
+
+class PhoneBindFrom(forms.Form):
+    user_phone = forms.CharField(label=u'手机号',max_length=20,)
+    verify_code = forms.CharField(label=u'验证码',max_length=20,)
+
+
+def wx_index(request):
+    return render(request, 'operation/wx_index.html')
+
+
+
+
+
+# 手机号绑定
+def phone_bind(request):
+    if request.method == 'POST':
+        uform = PhoneBindFrom(request.POST)
+        if uform.is_valid():
+            # 获得表单数据
+            open_id = u'Wechat_open_id_test1234567890'
+            customerclass = u'1'
+            # 手机号
+            user_phone = uform.cleaned_data['user_phone']
+            # 验证码
+            verify_code = uform.cleaned_data['verify_code']
+
+            # TODO:待完善
+            # 获取session中的手机号
+            session_user_phone = request.session.get('session_id_user_phone')
+            # 获取session中的验证码
+            session_msg_verify_code = request.session.get('session_id_msg_verify_code')
+            # 添加到数据库（除验证码之外的其他所需存储的字段）
+            # TODO:数据库存储信息
+            # SclMUser.objects.create(open_id=open_id, user_phone=user_phone, customerclass=customerclass)
+            # 绑定成功，跳转到用户主页
+            # TODO:待完善
+            # 暂时以session 中的验证码和手机号作为绑定成功的判断条件
+            if (user_phone == session_user_phone and verify_code == session_msg_verify_code):
+                return HttpResponseRedirect('/operation/wx_index')
+            else:
+                # TODO:
+                return
+    else:
+        uform = PhoneBindFrom()
+    context = {}
+    context.update({
+            'uform': uform,
+        })
+
+    return render(request,'operation/phone_bind.html', context)
+
+
+
+"""
+短信验证码
+"""
+# 验证码有效期 (验证码有效期设置为15分钟，通Session 有效期保持一致，Session有效期设置在 settings.py 中)
+session_age_time = u'15分钟'
+
+# 发送短信验证码
+def send_msg(request):
+    if request.method == 'GET':
+        userPhone = request.GET.get('user_phone')
+        request.session['session_id_user_phone'] = userPhone  # 将用户手机号存储到session中
+        print userPhone
+        verifyCode = generate_verify_code()
+        print ("verifyCode:" + verifyCode)
+        request.session['session_id_msg_verify_code'] = verifyCode  # 将验证码存储到session中
+        # 获取用户手机号等，然后format 短信内容
+        msg_info = list([])
+        msg_info.append(str(userPhone))
+        msg_info.append(verifyCode)
+        msg_info.append(session_age_time)
+        data = format_msg(str(userPhone), msg_info)
+        # API 发送短信
+        smsOperator = SmsOperator(APIKEY)
+        result = smsOperator.single_send(data)
+        return HttpResponse(json.dumps(result.content, ensure_ascii=False), content_type='application/json')
+
+
+# 随机生成6位数字的验证码
+def generate_verify_code():
+    code_list = []
+    for i in range(6):
+        random_num = random.randint(0, 9)
+        code_list.append(str(random_num))
+
+    return "".join(code_list)
+
+
+# 手机号码格式校验
+def verify_phone(phone_num):
+    phone_re = re.compile('^0\d{2,3}\d{7,8}$|^1[358]\d{9}$|^147\d{8}')
+    return phone_re.match(phone_num)
+
+
+# 格式化短信内容
+def format_msg(phone, l):
+    msg_data = {}
+    if verify_phone(phone):
+        msg_data['mobile'] = str(phone)
+    if l.__len__() == 3:
+        msg_text = u'【微言信息】亲爱的%s，您的验证码是%s。有效期为%s，请尽快验证' % (l[0],l[1],l[2])
+        msg_data['text'] = msg_text
+    return msg_data
 

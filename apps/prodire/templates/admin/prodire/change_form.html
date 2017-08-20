@@ -1,0 +1,9 @@
+
+<form action="/admin/prodire/updatePicture" method="POST" enctype="multipart/form-data">{% csrf_token %}
+ 
+            <div class="updateImg">
+            <img src="{{ Pro_icon.photo.url }}" alt=""/> </div>          
+             
+            <input name="photo" type="file" id="exampleInputFile">            
+            <button id="photo" class="btn btn-danger" type="submit">上传头像</button>
+</form>

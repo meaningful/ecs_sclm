@@ -524,6 +524,7 @@ class FilePermission(models.Model):
 
 
     class Meta(object):
-        verbose_name = _('file permission')
-        verbose_name_plural = _('file permissions')
+        # verbose_name = _('file permission')
+        verbose_name = (u'文件权限')
+        # verbose_name_plural = _('file permissions')
         app_label = 'filer'
