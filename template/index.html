@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>SCLM show system </title>
+
+<!-- bootstrap -->
+<link rel="stylesheet" href="static/assets/bootstrap/css/bootstrap.min.css" />
+
+<!-- animate.css -->
+<link rel="stylesheet" href="static/assets/animate/animate.css" />
+<link rel="stylesheet" href="static/assets/animate/set.css" />
+<link rel="stylesheet" href="static/assets/style.css" >
+
+
+</head>
+
+<body>
+<!-- works -->
+<div id="works"  class=" clearfix grid"> 
+  
+  {% for picName in filepath %}
+    <figure class="effect-oscar  wowload fadeIn">
+        <img src="media/{{picName}}" alt="img01"/>
+        <figcaption>
+            <h2>amazing</h2>
+            <p>this is a test make by liujie <br>
+            <a href="media/{{picName}}" title="1" data-gallery>View more</a></p>            
+        </figcaption>
+    </figure>
+  {% endfor %}
+    
+     
+</div>
+<!-- works -->
+
+</body>
+</html>

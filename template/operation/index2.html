@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <title>测试</title>
+    </head>
+
+    <body>
+        <h1>...</h1>
+        FOLDER <strong>{{ foldermessage }}</strong><br />
+        USER: <strong>{{ usermessage }}</strong><br />
+        <a href="/operation/index/">About</a><br />
+        <strong>{{usermessage}}能读{{fold.name}}里的文件</strong>
+        {% if canreadfilelist %}
+        <ul>
+           {% for file in canreadfilelist %}
+            <li> {{file.label}} </li>
+            {% if file.file_type == 'Image' %}
+            <p>显示缩略图</p><br/>
+            <img src={{file.icons.48}} width="28" height="28" >
+            <a href={{file.canonical_url}}>链接:{{file.canonical_url}}</a>
+            <p>下面图片直接带链接,点击就可查看图片</p>
+            <a href={{file.canonical_url}}>
+            <img src={{file.icons.48}} width="28" height="28" >
+            </a>
+            {% endif %}
+            {% endfor %}
+        </ul>
+        {% endif %}
+        <strong>{{usermessage}}能读{{fold.name}}里的目录</strong>
+        {% if foldlist %}
+        <ul>
+           {% for folder in foldlist %}
+            <p><a href="{% url 'directory_listing' folder.id %}">目录名：{{folder.name}}: 点击即可进入目录的链接</a> 下面显示目录图标:</p>
+            {% if folder.diricon %}
+            {% load thumbnail %}
+            <!-- <img src="{{folder.diricon.avator.url}}" alt=" " > -->
+            <!-- - 显示文件夹图片的缩略图 -->
+            <img src="{% thumbnail folder.diricon 50x50 crop %}" alt=" " /><br/>
+            <!-- <img src="{{ folder.diricon.avatar.url }}" alt=" " /> -->
+            {% endif %}
+            {% endfor %}
+        </ul>
+        {% endif %}
+            </body>
+
+</html>

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <title>测试</title>
+    </head>
+
+    <body>
+        <h1>...</h1>
+        FOLDER <strong>{{ folder.name }}</strong><br />
+        <!-- USER: <strong>{{ usermessage }}</strong><br /> -->
+        <a href="/operation/index/">首页</a><br />
+        <strong>{{user}}能读{{fold.name}}里的文件</strong>
+        {% if folder_files %}
+        <ul>
+           {% for file in folder_files %}
+          <li> {{file.label}} </li>
+          <li> {{file.url}} </li>
+          <li> {{file.canonical_url}} </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        <strong>{{user}}能读{{fold.name}}里的目录</strong>
+        {% if folder_children %}
+        <ul>
+           {% for folder in folder_children %}
+            <li> {{folder.name}} </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        <strong>当前路径<{{current_url}}/strong>
+            </body>
+
+</html>
