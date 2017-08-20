@@ -1,0 +1,51 @@
+.form {
+	margin-top: 20%;
+	margin-left: 0%;
+	margin-right: 0%;
+	font-size: 1em;
+}
+
+.numberInputDiv {
+	width: 50%;
+	margin-left: 2%;
+	margin-right:2%
+}
+
+.codeButtonDiv {
+	margin-left: 2%;
+	margin-right:2%
+}
+
+.codeButton {
+	width:max-content;
+	padding-top: 0;
+	padding-bottom: 0;
+	padding-right: 0;
+	padding-left: 0;
+	border: 1px solid #FF0088;
+	border-radius: 0;
+	background: #FF0088;
+	color: white;
+}
+
+.codeInputDiv {
+	margin-left: 4%;
+}
+
+.submitDiv {
+	width: 100%;
+	text-align: center;
+}
+
+.submitButton {
+	width: max-content;
+	margin-top: 20px;
+	padding-top: 12px;
+	padding-bottom: 12px;
+	padding-right: 35px;
+	padding-left: 35px;
+	border: none;
+	border-radius: 10px;
+	background: #FF0088;
+	color: white;
+}
