@@ -18,7 +18,7 @@ from models import SclMUser
 from yunpian.SmsOperator import SmsOperator
 import sys
 import random
-
+from django.template import Context , loader
 APIKEY = '7d30dd097278b7a073e99d548aa54c1d'
 
 
@@ -100,20 +100,7 @@ def directory_listing(request, folder_id=None):
         else:
             folder = get_object_or_404(Folder, id=folder_id)
         request.session['filer_last_folder_id'] = folder_id
-        # actions = self.get_actions(request)
-        # folder_qs = folder.children.all()
-        # file_qs = folder.files.all()
-        # show_result_count = False
-        # folder_children = folder_qs
-        # folder_files = file_qs
-        # # if folder.is_root and not search_mode:  change whcy
-        can_read = folder.get_childfile_read(user=hasuser)
-        filelist = list(can_read)
-        # filelist = []
-        # for num in can_read:
-        #     file = File.objects.get(id=num)
-        #     filelist.append(file)
-        can_read_folder = folder.get_childfolder_read(user)
+        can_read_folder = folder.get_childfolder_read(hasuser)
         folderlist = []
         for id in can_read_folder:
             fold = Folder.objects.get(id=id)
@@ -124,15 +111,14 @@ def directory_listing(request, folder_id=None):
         else:
             virtual_items = []
 
-        context = {}
-        context.update({
-            'folder': folder,
-            'user': user,
-            'current_url': request.path,
-            'folder_children': folderlist, 
-            'folder_files': filelist,
+
+        listoffiledir = list(folder.get_childfile_read(user=hasuser))
+        template = loader.get_template('operation/index3.html')
+        context = Context({
+        'filepath': listoffiledir,
+        'foldlist': folderlist,
         })
-        return render(request, 'operation/directory_listing.html', context)
+        return HttpResponse(template.render(context))
 
 
 

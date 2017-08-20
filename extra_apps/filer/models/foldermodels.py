@@ -223,10 +223,13 @@ class Folder(models.Model, mixins.IconsMixin):
             if kw.has_key('user'):
                 hasuser=kw['user']
                 filelist = FilePermission.objects.get_read_id_list(hasuser)
-                for onefile in self.files:
-                    if onefile.id in filelist:
+                if filelist == 'All':
+                   files = set(File.objects.all())
+                else:
+                   for onefile in self.files:
+                       if onefile.id in filelist:
                         # files.add(File.objects.get(id=onefile))
-                        files.add(onefile)
+                            files.add(onefile)
         return files
 
     def get_childfolder_read(self, user):
