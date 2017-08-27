@@ -1,0 +1,7 @@
+<uwsgi>
+	<socket>:8001</socket>
+	<chdir>/root/WorkSpace/sclmknowledge</chdir>
+	<module>django_wsgi</module>
+	<processes>1</processes>
+	<daemonize>uwsgi.log</daemonize>
+</uwsgi>
