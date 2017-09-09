@@ -1129,11 +1129,11 @@ figure.effect-chico:hover p {
 		text-align: center;
 	}
 	.grid figure {
-		width: 50%;
+		width: 31%; margin:2px;
 	}
 }
 
 
 @media (max-width: 639px) {
-	.grid figure {width: 100%;}
+	.grid figure {width: 31%;margin:2px; }
 }

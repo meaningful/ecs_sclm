@@ -37,7 +37,7 @@ p{font-size:1em;line-height: 1.7em; margin-bottom: 1.7em;}
 
 #head,.carousel{margin-top: 0;}
 
-#home{padding-top: 6em;}
+#home{padding-top: 2em;}
 .carousel-caption{top:0;bottom: 0;left: 0; right: 0;padding: 0;}
 .caption-wrapper{display: table;height: 100%;width: 100%;}
 .caption-info{display: table-cell;vertical-align: middle;}
@@ -64,7 +64,7 @@ p{font-size:1em;line-height: 1.7em; margin-bottom: 1.7em;}
 .carousel-indicators{bottom: 0;}
 
 /*works*/
-#works{padding-top:6em;}
+#works{padding-top:2em;}
 #works figcaption a{border:1px solid #fff;margin-top: 1em;display: inline-block;color: #fff;padding: 0 2em;}
 #works figcaption a:hover{text-decoration: none;padding: 0 3em;}
 /*works*/
@@ -146,12 +146,10 @@ p{font-size:1em;line-height: 1.7em; margin-bottom: 1.7em;}
 	h2.text-center{text-align: left;font-size: 1.7em;}
 	h4 {font: 300 1.2em Roboto,Arial,Helvetica;}
 	#partners h2{padding: 0 1em;} 
-	#works {padding-top: 5em;}
+	#works {padding-top: 2em;}
 
 	.partners{display: block;float: left;}
 	.partners img{width: 120px;}
-
-
 
 	.about.spacer{padding-left: 2em;padding-right: 2em;}
 	.spacer{padding:2em 0 0 0;}
