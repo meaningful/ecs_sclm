@@ -11,8 +11,10 @@ def hello(request):
     return HttpResponse("Hello world !  now , the time is :"+ time.strftime('%Y-%m-%d %H-%M-%S'))
 
 def index(request):
-    fileindexfolder = get_object_or_404(Folder, name="index_勿删")
-    listoffiledir = [singlefile.file for singlefile in fileindexfolder.files ]
+    fileindexfolder = get_object_or_404(Folder, name="ab")
+    # listoffiledir = [singlefile.file for singlefile in fileindexfolder.files ]
+    hasuser = 'sclmmanager'
+    listoffiledir = list(fileindexfolder.get_childfile_read())
     template = loader.get_template('index.html')
     context = Context({
         'filepath':listoffiledir,

@@ -23,11 +23,10 @@
   
   {% for picName in filepath %}
     <figure class="effect-oscar  wowload fadeIn">
-        <img src="media/{{picName}}" alt="img01"/>
+        <!-- <img src="media/{{picName}}" alt="img01"/> -->
+        <img src={{picName.icons.180}} alt="img01"/>
         <figcaption>
-            <h2>amazing</h2>
-            <p>this is a test make by liujie <br>
-            <a href="media/{{picName}}" title="1" data-gallery>View more</a></p>            
+            <a href={{picName.url}} title="1" data-gallery>View more</a></p>            
         </figcaption>
     </figure>
   {% endfor %}
