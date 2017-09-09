@@ -5,7 +5,7 @@ import json
 import random
 import re
 import sys
-
+import requests
 from django import forms
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
@@ -16,9 +16,59 @@ from filer.models import Folder, FolderRoot
 from yunpian.SmsOperator import SmsOperator
 from django.template import Context , loader
 from .utils import DBHelper
+from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.generic.base import View
+from django.template import loader, Context
+from xml.etree import ElementTree as ET
+import time
+import hashlib
+import lxml
+from lxml import etree
+import urllib2
+import json
+from django.urls import reverse
 reload(sys)
 sys.setdefaultencoding('utf-8')
 APIKEY = '7d30dd097278b7a073e99d548aa54c1d'
+global appid
+global appsecret
+
+appid = "wx8ca0d078587b5a8e"
+appsecret = "c9eb23fa299124647ed3298030e6215e"
+
+class WeChat(View):
+  #这里我当时写成了防止跨站请求伪造，其实不是这样的，恰恰相反。因为django默认是开启了csrf防护中间件的
+  #所以这里使用@csrf_exempt是单独为这个函数去掉这个防护功能。
+  @csrf_exempt
+  def dispatch(self, *args, **kwargs):
+    return super(WeChat, self).dispatch(*args, **kwargs)
+    
+  def get(self, request):
+  
+    #下面这四个参数是在接入时，微信的服务器发送过来的参数
+    signature = request.GET.get('signature', None)
+    timestamp = request.GET.get('timestamp', None)
+    nonce = request.GET.get('nonce', None)
+    echostr = request.GET.get('echostr', None)
+    
+    #这个token是我们自己来定义的，并且这个要填写在开发文档中的Token的位置
+    token = 'sclm2017'
+    
+    #把token，timestamp, nonce放在一个序列中，并且按字符排序
+    hashlist = [token, timestamp, nonce]
+    hashlist.sort()
+    
+    #将上面的序列合成一个字符串
+    hashstr = ''.join([s for s in hashlist])
+    
+    #通过python标准库中的sha1加密算法，处理上面的字符串，形成新的字符串。
+    hashstr = hashlib.sha1(hashstr).hexdigest()
+    
+    #把我们生成的字符串和微信服务器发送过来的字符串比较，
+    #如果相同，就把服务器发过来的echostr字符串返回去
+    if hashstr == signature:
+      return HttpResponse(echostr)
 
 
 # 前端表单
@@ -43,12 +93,6 @@ def index(request):
     # Note that the first parameter is the template we wish to use.
     context_dict['usermessage'] = user1.username
     can_read = fold1.get_childfile_read(user=user1)
-    # readlist = []
-    # for num in can_read:
-    #     file = File.objects.get(id=num)
-    #     readlist.append(file)
-    # context_dict['canreadfilelist'] = json.dumps(can_readlist)
-    # context_dict['canreadfilelist'] = readlist
     context_dict['canreadfilelist'] = list(can_read)
     context_dict['fold'] = fold1
     can_read_folder = fold1.get_childfolder_read(user=user1)
@@ -58,6 +102,14 @@ def index(request):
         folderlist.append(folder)
     context_dict['foldlist'] = folderlist
     return render(request, 'operation/index.html', context_dict)
+
+def get_openid(request):
+    code=request.GET.get(u'code', None)
+    print("*************************test******************************")
+    response = urllib2.urlopen('https://api.weixin.qq.com/sns/oauth2/access_token?appid=%s&secret=%s&code=%s&grant_type=authorization_code&connect_redirect=1'%(appid,appsecret,code))
+    content = response.read()
+    s=json.loads(content)
+    return HttpResponse("Hello, %s"%s["openid"])
 
 def user_login(request):
 
@@ -100,31 +152,38 @@ def user_login(request):
         # blank dictionary object...
         return render(request, 'operation/login.html', {})
     # Create your views here.  
-
 def directory_listing(request, folder_id=None):
         if folder_id is None:
             folder = FolderRoot()
         else:
             folder = get_object_or_404(Folder, id=folder_id)
         request.session['filer_last_folder_id'] = folder_id
-
+        hasgroup = request.session.get('user_group')
         folderlist = []
-        if request.user:
-            hasuser = request.user
-            listoffiledir = list(folder.get_childfile_read(user=hasuser))
-            can_read_folder = folder.get_childfolder_read(user=hasuser)
+        # hasgroup = request.GET.get('group')
+        if hasgroup:
+            listoffiledir = list(folder.get_childfile_read(group=hasgroup))
+            can_read_folder = folder.get_childfolder_read(group=hasgroup)
             for id in can_read_folder:
                 fold = Folder.objects.get(id=id)
                 folderlist.append(fold)
         else:
-            if request.group:
-                hasgroup = request.group
-                listoffiledir = list(folder.get_childfile_read(group=hasgroup))
-                can_read_folder = folder.get_childfolder_read(group=hasgroup)
+            if request.user:
+                hasuser = request.user
+                listoffiledir = list(folder.get_childfile_read(user=hasuser))
+                can_read_folder = folder.get_childfolder_read(user=hasuser)
                 for id in can_read_folder:
                     fold = Folder.objects.get(id=id)
                     folderlist.append(fold)
-   
+        
+        #     if request.GET.get('group'):
+        #         hasgroup = request.GET.get('group')
+        #         listoffiledir = list(folder.get_childfile_read(group=hasgroup))
+        #         can_read_folder = folder.get_childfolder_read(group=hasgroup)
+        #         for id in can_read_folder:
+        #             fold = Folder.objects.get(id=id)
+        #             folderlist.append(fold)
+        #
         if folder.is_root:
             virtual_items = folder.virtual_folders
         else:
@@ -137,6 +196,44 @@ def directory_listing(request, folder_id=None):
         'foldlist': folderlist,
         })
         return HttpResponse(template.render(context))
+
+
+# def directory_listing(request, folder_id=None):
+#         if folder_id is None:
+#             folder = FolderRoot()
+#         else:
+#             folder = get_object_or_404(Folder, id=folder_id)
+#         request.session['filer_last_folder_id'] = folder_id
+
+#         folderlist = []
+#         if request.user:
+#             hasuser = request.user
+#             listoffiledir = list(folder.get_childfile_read(user=hasuser))
+#             can_read_folder = folder.get_childfolder_read(user=hasuser)
+#             for id in can_read_folder:
+#                 fold = Folder.objects.get(id=id)
+#                 folderlist.append(fold)
+#         else:
+#             if request.group:
+#                 hasgroup = request.group
+#                 listoffiledir = list(folder.get_childfile_read(group=hasgroup))
+#                 can_read_folder = folder.get_childfolder_read(group=hasgroup)
+#                 for id in can_read_folder:
+#                     fold = Folder.objects.get(id=id)
+#                     folderlist.append(fold)
+   
+#         if folder.is_root:
+#             virtual_items = folder.virtual_folders
+#         else:
+#             virtual_items = []
+
+
+#         template = loader.get_template('operation/index3.html')
+#         context = Context({
+#         'filepath': listoffiledir,
+#         'foldlist': folderlist,
+#         })
+#         return HttpResponse(template.render(context))
 
 
 # 手机号绑定
@@ -156,7 +253,12 @@ def phone_bind(request):
                     DBHelper.sql_tab_zsk_userinfo_insert.format("\'" + open_id + "\'", "\'" + agent_wx + "\'"))
                 user_info = get_user_info(agent_wx, customerclass)
                 group = format_group(str(customerclass) + str(user_info[1]))
-                return HttpResponseRedirect('/operation/1/?group='+group)
+                request.session['user_group'] = group
+                # return requests.post(settings.ALLOWED[0]+reverse('directory_listing',args=(1,)), data=json.dumps({'group': group}))
+                # return HttpResponseRedirec
+                # t('/operation/1/?group='+group)
+                return  HttpResponseRedirect(reverse('directory_listing',args=(1,)))
+                # return HttpResponseRedirect('/operation/1/')
             else:
                 return HttpResponseRedirect('/operation/phone_bind/')
     else:
@@ -166,6 +268,7 @@ def phone_bind(request):
             'uform': uform,
         })
     return render(request,'operation/phone_bind.html', context)
+
 
 
 
@@ -257,15 +360,16 @@ def format_msg(phone, l):
 
 # 格式化group参数
 def format_group(group):
-    if str(group).find(u'微信') ==0:
-        group = str(group).replace(u'微信', '')
-    
-    if str(group).find(u'总代') !=0:
-        group = str(group).replace(u'总代', u'总代理')
-        
-    if str(group).find(u'官方') !=0:
-        group = str(group).replace(u'官方', u'总代理')
-        
+    str_wx = '微信'
+    str_zt = '总代'
+    str_ztl = '总代理'
+
+    if str(group).find('微信') != 0:
+        group = str_wx + str(group)
+
+    if str(group).find(str_ztl) != 0:
+        group = str(group).replace(str_ztl, str_zt)
+
     return str(group)
 
 

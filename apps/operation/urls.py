@@ -2,6 +2,7 @@ from django.conf.urls import url
 
 from . import views
 
+from .views import WeChat
 urlpatterns = [
     url(r'^$', views.index, name='index'),
     url(r'^login/$', views.user_login, name='login'),
@@ -10,4 +11,6 @@ urlpatterns = [
     url(r'^phone_bind/$', views.phone_bind, name='phone_bind'),
     url(r'^send_msg/$', views.send_msg, name='send_msg'),
     # url(r'^(?P<folder_name>[\w\-]+)/$',views.directory_listing,name='directory_listing'),
+    url(r'^wechat/$', WeChat.as_view()),
+    url(r'^get_openid', views.get_openid, name='get_openid'),
 ]
