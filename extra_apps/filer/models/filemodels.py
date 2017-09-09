@@ -7,6 +7,7 @@ import os
 from datetime import datetime
 
 from django.conf import settings
+from django.contrib.auth.models import Group, User
 from django.contrib.auth import models as auth_models
 from django.core import urlresolvers
 from django.core.exceptions import ValidationError
@@ -49,26 +50,38 @@ class FilePermissionManager(models.Manager):
     Theses methods are called by introspection from "has_generic_permisison" on
     the folder model.
     """
-    def get_read_id_list(self, user):
+    def get_read_id_list(self, **kw):
         """
         Give a list of a Folders where the user has read rights or the string
         "All" if the user has all rights.
         """
-        return self.__get_id_list(user, "can_read")
+        
+        return self.__get_id_list("can_read", **kw)
 
-    def get_edit_id_list(self, user):
-        return self.__get_id_list(user, "can_edit")
+    def get_edit_id_list(self, **kw):
+        return self.__get_id_list("can_edit", **kw)
 
     # def get_add_children_id_list(self, user):
     #     return self.__get_id_list(user, "can_add_children")
 
-    def __get_id_list(self, user, attr):
-        if user.is_superuser or not filer_settings.FILER_ENABLE_PERMISSIONS:
-            return 'All'
+    def __get_id_list(self, attr, **kw):
+        
         allow_list = set()
         deny_list = set()
-        group_ids = user.groups.all().values_list('id', flat=True)
+        
+        if kw.has_key('user'):
+            user = kw['user']
+            if user.is_superuser or not filer_settings.FILER_ENABLE_PERMISSIONS:
+                return 'All'
+            else:
+                group_ids = user.groups.all().values_list('id', flat=True)
         # q = Q(user=user) | Q(group__in=group_ids) | Q(everybody=True)
+        elif kw.has_key('group'):
+            group = kw['group']
+            group_ids = Group.objects.filter(name=group)
+        else:
+            return 'Guest'
+
         q = Q(groups__in=group_ids) | Q(everybody=True)
         # perms = self.filter(q).order_by('folder__tree_id', 'folder__level',
                                         # 'folder__lft')
@@ -315,33 +328,34 @@ class File(PolymorphicModel, mixins.IconsMixin):
         Return true if the current user has permission on this
         file. Return the string 'ALL' if the user has all rights.
         """
-        user = request.user
-        if not user.is_authenticated():
-            return False
-        elif user.is_superuser:
-            return True
-        elif user == self.owner:
-            return True
-        else:
-            if not hasattr(self, "permission_cache") or\
-               permission_type not in self.permission_cache or \
-               request.user.pk != self.permission_cache['user'].pk:
-                if not hasattr(self, "permission_cache") or request.user.pk != self.permission_cache['user'].pk:
-                    self.permission_cache = {
-                        'user': request.user,
-                    }
+        if request.user:
+            user = request.user
+            if not user.is_authenticated():
+                return False
+            elif user.is_superuser:
+                return True
+            elif user == self.owner:
+                return True
+            else:
+                if not hasattr(self, "permission_cache") or\
+                permission_type not in self.permission_cache or \
+                request.user.pk != self.permission_cache['user'].pk:
+                    if not hasattr(self, "permission_cache") or request.user.pk != self.permission_cache['user'].pk:
+                        self.permission_cache = {
+                            'user': request.user,
+                        }
 
-                # This calls methods on the manager i.e. get_read_id_list()
-                func = getattr(FilePermission.objects,
-                               "get_%s_id_list" % permission_type)
-                permission = func(user)
-                if permission == "All":
-                    self.permission_cache[permission_type] = True
-                    self.permission_cache['read'] = True
-                    self.permission_cache['edit'] = True
-                    self.permission_cache['add_children'] = True
-                else:
-                    self.permission_cache[permission_type] = self.id in permission
+                    # This calls methods on the manager i.e. get_read_id_list()
+                    func = getattr(FilePermission.objects,
+                                "get_%s_id_list" % permission_type)
+                    permission = func(user=user)
+                    if permission == "All":
+                        self.permission_cache[permission_type] = True
+                        self.permission_cache['read'] = True
+                        self.permission_cache['edit'] = True
+                        self.permission_cache['add_children'] = True
+                    else:
+                        self.permission_cache[permission_type] = self.id in permission
             return self.permission_cache[permission_type]
 
     def get_admin_change_url(self):
@@ -524,7 +538,7 @@ class FilePermission(models.Model):
 
 
     class Meta(object):
-        # verbose_name = _('file permission')
-        verbose_name = (u'文件权限')
-        # verbose_name_plural = _('file permissions')
+        verbose_name = _('file permission')
+        # verbose_name = (u'文件权限')
+        verbose_name_plural = (u'文件权限')
         app_label = 'filer'

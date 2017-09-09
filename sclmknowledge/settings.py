@@ -25,7 +25,7 @@ SECRET_KEY = 'c@r!33k6o_jcclh0!$)y$%g3$2=%dcpl+-qk@k^5yp$f391ja#'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['47.93.228.118', ]
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -83,13 +83,22 @@ WSGI_APPLICATION = 'sclmknowledge.wsgi.application'
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': "sclm",
-        'USER': 'root',
-        'PASSWORD': 'WLW2017test',
+    'default':{
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': "ecs_sclm",
+        'USER': 'postgres',
+        'PASSWORD': 'cy78102',
         'HOST': '127.0.0.1',
+
 }
+
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': "sclm",
+#         'USER': 'root',
+#         'PASSWORD': 'WLW2017test',
+#         'HOST': '127.0.0.1',
+# }
 
 }
 
@@ -137,9 +146,18 @@ STATIC_URL = '/static/'
 # STATICFILES_DIRS = (
 #     os.path.join(BASE_DIR, "static"),
 #     )
-STATIC_ROOT = (
-    '/root/WorkSpace/sclmknowledge/static'
+# STATIC_ROOT = (
+#     '/root/WorkSpace/sclmknowledge/static'
+#
+# )
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, "static"),
 )
+# STATIC_ROOT = (
+#     os.path.join(BASE_DIR, "static")
+#
+# )
+
 FILER_CANONICAL_URL = 'media/'
 FILER_DEBUG = True
 FILER_ENABLE_LOGGING = True
@@ -155,7 +173,7 @@ THUMBNAIL_PROCESSORS = (
 MEDIA_URL = '/media/'
 #MEDIA_ROOT = ('/home/ossfs/media')
 
-MEDIA_ROOT = ('/home/localmediafiles')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 

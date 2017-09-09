@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
-    <title>手机号绑定</title>
+    <title>微信号绑定</title>
     {% block stylesheet %}
     <link rel="stylesheet" type="text/css" href="{% static "operation/css/register.css" %}" />
     <link rel="stylesheet" type="text/css" href="{% static "operation/css/base.css" %}" />
@@ -12,43 +12,34 @@
     {% endblock %}
     <script src="{% static "operation/js/jquery-1.8.3.min.js" %}" type="text/javascript"></script>
     <script type="text/javascript">
-        var isPhone = 1;
-        //获取验证码
         $(document).ready(function(){
                     $("#get_code").click(function(){
-                        checkPhone();
-                        if(isPhone){
-                            var userPhone = $(" #user_phone ").val();
-                             $.getJSON("{% url 'send_msg' %}",{user_phone:userPhone}, function(ret){
-                                <!--console.log(ret);-->
-                                 $('#msg').show();
-                                 $('#msg_detail').html(ret.msg);
-                                countDown();
-                             })
+                        var agentWx = $(" #agent_wx ").val();
+                        if(agentWx.replace(/(^\s*)|(\s*$)/g, '') == ''){
+                             $('#msg').show();
+                             $('#msg_detail').html("微信号不能为空！");
+                        }else{
+                             $.getJSON("{% url 'send_msg' %}",{agent_wx:agentWx}, function(ret){
+                                    $('#msg').show();
+                                    $('#msg_detail').html(ret.msg);
+                                    countDown();
+                              })
                         }
                     })
                 });
 
-        //验证手机号码
-        function checkPhone(){
-	        var phone = $('#user_phone').val();
-	        var pattern = /^1[0-9]{10}$/;
-	        isPhone = 1;
-	        if(phone == '') {
-		        $('#msg').show();
-                $('#msg_detail').html("请输入手机号码");
-		        isPhone = 0;
-		        return;
-	        }
-	        if(!pattern.test(phone)){
-		        $('#msg').show();
-                $('#msg_detail').html("请输入正确的手机号码");
-		        isPhone = 0;
-		        return;
-	        }
+        function checkNull(){
+            var agentWx = $(" #agent_wx ").val();
+            var verifyCode = $(" #verify_code ").val();
+            if(agentWx.replace(/(^\s*)|(\s*$)/g, '') == '' || verifyCode.replace(/(^\s*)|(\s*$)/g, '') == ''){
+                 $('#msg').show();
+                 $('#msg_detail').html("微信号或者验证码输入为空！");
+                 return false;
+              }else{
+                return true;
+            }
         }
 
-        //倒计时
         function countDown(){
 	        $('#get_code').hide();
 	        $('#count_second').html('60');
@@ -66,12 +57,13 @@
 		            }
 	            },1000);
         }
+
     </script>
 </head>
 <body>
 	<div class="titlePanelDiv">
     	<div class="titleTextDiv">
-    	   <text class="titleText">手机号绑定</text>
+    	   <text class="titleText">微信号绑定</text>
     	</div>
     </div>
 <form method = 'post' enctype="multipart/form-data">
@@ -80,27 +72,31 @@
         <div class="weui_cells weui_cells_form form">
             <div class="weui_cell weui_cell_vcode">
                 <div class="weui_cell__hd">
-                    <label class="weui_label">{{uform.user_phone.label}}</label>
+                    <label class="weui_label">{{uform.agent_wx.label}}</label>
                 </div>
                 <div class="weui_cell__bd numberInputDiv">
-                    <input  id="user_phone"  name="user_phone" class="weui_input numberInput" type="tel" maxlength="11" placeholder="请输入手机号"/></div>
+                    <input  id="agent_wx"  name="agent_wx" class="weui_input numberInput" type="text" maxlength="50" placeholder="请输入微信号"/></div>
                     <button id="get_code" type="button" class="weui_vcode_btn codeButton">获取验证码</button>
                     <button id="reset_code" type="button" class="weui_vcode_btn codeButton" style="display:none;"><span id="count_second">60</span>秒后重新获取</button>
 				</div>
-                <p id="msg" style="display:none;" class="weui_vcode_btn "><span id='msg_detail'  style="font-size:12px"></span></p>
 
             <div class="weui_cell weui_cell_vcode">
                 <div class="weui_cell__hd">
                     <label class="weui_label">{{uform.verify_code.label}}</label>
                 </div>
                 <div class="weui_cell__bd codeButtonDiv">
-                    <input id="verify_code"  name="verify_code" class="weui_input codeInput" type="number" placeholder="请输入验证码"/>
+                    <input id="verify_code"  name="verify_code" class="weui_input codeInput" type="number"  placeholder="请输入验证码"/>
                 </div>
             </div>
-
     	</div>
+        <div>
+            <p id="msg" style="display:none;margin-top:1%;margin-left:1%;font-size:14px;color:#2288BB;" >温馨提示：<span id='msg_detail'  style="font-size:12px;color:#FF0000;"></span></p>
+        </div>
+        <div>
+            <p style="margin-top:1%;margin-left:1%;"><span id='tip' style="font-size:12px;color:#FF0000;">说明：短信验证码将发送到该微信号在本系统中已绑定的手机号上</span></p>
+        </div>
         <div class="submitDiv">
-        	<input type="submit" value="确认绑定" class="submitButton">
+        	<input id="submit_btn" type="submit" value="确认绑定" class="submitButton" onclick="return checkNull()" >
         </div>
     </div>
 </form>
