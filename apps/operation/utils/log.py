@@ -2,7 +2,8 @@
 import logging
 
 # 是否开启log
-log_enable = True
+# log_enable = True
+log_enable = False
 
 # log配置
 logging.basicConfig(

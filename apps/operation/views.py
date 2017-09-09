@@ -77,39 +77,53 @@ class WeChatBindFrom(forms.Form):
     verify_code = forms.CharField(label=u'验证码', max_length=6,)
 
 
-open_id = u'open_id123'
+# open_id = u'open_id123'
 customerclass = u'微信三草两木'
 
 
 def index(request):
-    fold1 = Folder.objects.get(id=1)
-    if request.user:
-        user1 = request.user
+    # fold1 = Folder.objects.get(id=1)
+    # if request.user:
+    #     user1 = request.user
+    # else:
+    #     user1 = User.objects.get(id=2)
+    # context_dict = {'foldermessage': fold1.file_count}
+    # # Return a rendered response to send to the client.
+    # # We make use of the shortcut function to make our lives easier.
+    # # Note that the first parameter is the template we wish to use.
+    # context_dict['usermessage'] = user1.username
+    # can_read = fold1.get_childfile_read(user=user1)
+    # context_dict['canreadfilelist'] = list(can_read)
+    # context_dict['fold'] = fold1
+    # can_read_folder = fold1.get_childfolder_read(user=user1)
+    # folderlist = []
+    # for id in can_read_folder:
+    #     folder = Folder.objects.get(id=id)
+    #     folderlist.append(folder)
+    # context_dict['foldlist'] = folderlist
+    # return render(request, 'operation/index.html', context_dict)
+    code = request.GET.get('code', None)
+    open_id = get_openid(appid,appsecret,code)
+    request.session['open_id'] = open_id
+    result_tab_zsk_userinfo = DBHelper.query(DBHelper.sql_tab_zsk_userinfo.format("\'"+open_id+"\'"))
+    if not result_tab_zsk_userinfo or result_tab_zsk_userinfo.__len__() == 0:
+        return  HttpResponseRedirect('/operation/phone_bind/')
     else:
-        user1 = User.objects.get(id=2)
-    context_dict = {'foldermessage': fold1.file_count}
-    # Return a rendered response to send to the client.
-    # We make use of the shortcut function to make our lives easier.
-    # Note that the first parameter is the template we wish to use.
-    context_dict['usermessage'] = user1.username
-    can_read = fold1.get_childfile_read(user=user1)
-    context_dict['canreadfilelist'] = list(can_read)
-    context_dict['fold'] = fold1
-    can_read_folder = fold1.get_childfolder_read(user=user1)
-    folderlist = []
-    for id in can_read_folder:
-        folder = Folder.objects.get(id=id)
-        folderlist.append(folder)
-    context_dict['foldlist'] = folderlist
-    return render(request, 'operation/index.html', context_dict)
-
-def get_openid(request):
-    code=request.GET.get(u'code', None)
-    print("*************************test******************************")
+        user_info = get_user_info(str(result_tab_zsk_userinfo[0][0]), customerclass)
+        agent_levename = user_info[1]
+        if agent_levename:
+            group = format_group(str(customerclass)+str(agent_levename))
+            request.session['user_group'] = group
+            return  HttpResponseRedirect(reverse('directory_listing',args=(1,)))
+            
+    
+def get_openid(appid,appsecret,code):
+    # print("*************************test******************************")
     response = urllib2.urlopen('https://api.weixin.qq.com/sns/oauth2/access_token?appid=%s&secret=%s&code=%s&grant_type=authorization_code&connect_redirect=1'%(appid,appsecret,code))
     content = response.read()
     s=json.loads(content)
-    return HttpResponse("Hello, %s"%s["openid"])
+    # return HttpResponse("Hello, %s"%s["openid"])
+    return s["openid"]
 
 def user_login(request):
 
@@ -239,6 +253,7 @@ def directory_listing(request, folder_id=None):
 # 手机号绑定
 def phone_bind(request):
     if request.method == 'POST':
+        open_id = request.session.get('open_id')
         uform = WeChatBindFrom(request.POST)
         if uform.is_valid():
             # 从表单中获获取agent_wx 和 验证码

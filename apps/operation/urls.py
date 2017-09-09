@@ -12,5 +12,5 @@ urlpatterns = [
     url(r'^send_msg/$', views.send_msg, name='send_msg'),
     # url(r'^(?P<folder_name>[\w\-]+)/$',views.directory_listing,name='directory_listing'),
     url(r'^wechat/$', WeChat.as_view()),
-    url(r'^get_openid', views.get_openid, name='get_openid'),
+    url(r'^get_openid', views.index, name='get_openid'),
 ]
