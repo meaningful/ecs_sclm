@@ -6,7 +6,7 @@ the code in my ecs server
 
 当然上传之前肯定要自己先生成ssh key了，windows的用户可以下载xshell之类的工具来生成，我这边linux就直接输命令了
 
-ssh-keygen -t rsa # 一直回车下去，不输入密码
+ ssh-keygen -t rsa -C "your_email@youremail.com"  # 一直回车下去，不输入密码
 
 二、查看公钥
 
