@@ -83,26 +83,6 @@ customerclass = u'微信三草两木'
 
 
 def index(request):
-    # fold1 = Folder.objects.get(id=1)
-    # if request.user:
-    #     user1 = request.user
-    # else:
-    #     user1 = User.objects.get(id=2)
-    # context_dict = {'foldermessage': fold1.file_count}
-    # # Return a rendered response to send to the client.
-    # # We make use of the shortcut function to make our lives easier.
-    # # Note that the first parameter is the template we wish to use.
-    # context_dict['usermessage'] = user1.username
-    # can_read = fold1.get_childfile_read(user=user1)
-    # context_dict['canreadfilelist'] = list(can_read)
-    # context_dict['fold'] = fold1
-    # can_read_folder = fold1.get_childfolder_read(user=user1)
-    # folderlist = []
-    # for id in can_read_folder:
-    #     folder = Folder.objects.get(id=id)
-    #     folderlist.append(folder)
-    # context_dict['foldlist'] = folderlist
-    # return render(request, 'operation/index.html', context_dict)
     code = request.GET.get('code', None)
     open_id = get_openid(appid,appsecret,code)
     request.session['open_id'] = open_id
@@ -211,44 +191,6 @@ def directory_listing(request, folder_id=None):
         'foldlist': folderlist,
         })
         return HttpResponse(template.render(context))
-
-
-# def directory_listing(request, folder_id=None):
-#         if folder_id is None:
-#             folder = FolderRoot()
-#         else:
-#             folder = get_object_or_404(Folder, id=folder_id)
-#         request.session['filer_last_folder_id'] = folder_id
-
-#         folderlist = []
-#         if request.user:
-#             hasuser = request.user
-#             listoffiledir = list(folder.get_childfile_read(user=hasuser))
-#             can_read_folder = folder.get_childfolder_read(user=hasuser)
-#             for id in can_read_folder:
-#                 fold = Folder.objects.get(id=id)
-#                 folderlist.append(fold)
-#         else:
-#             if request.group:
-#                 hasgroup = request.group
-#                 listoffiledir = list(folder.get_childfile_read(group=hasgroup))
-#                 can_read_folder = folder.get_childfolder_read(group=hasgroup)
-#                 for id in can_read_folder:
-#                     fold = Folder.objects.get(id=id)
-#                     folderlist.append(fold)
-   
-#         if folder.is_root:
-#             virtual_items = folder.virtual_folders
-#         else:
-#             virtual_items = []
-
-
-#         template = loader.get_template('operation/index3.html')
-#         context = Context({
-#         'filepath': listoffiledir,
-#         'foldlist': folderlist,
-#         })
-#         return HttpResponse(template.render(context))
 
 
 # 手机号绑定
