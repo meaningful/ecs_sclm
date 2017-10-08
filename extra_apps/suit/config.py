@@ -1,3 +1,5 @@
+#!/usr/bin/python
+#coding:utf-8
 from django.contrib.admin import ModelAdmin
 from django.conf import settings
 from . import VERSION
@@ -8,7 +10,7 @@ def default_config():
         'VERSION': VERSION,
 
         # configurable
-        'ADMIN_NAME': 'Django Suit',
+        'ADMIN_NAME': '三草两木',
         'HEADER_DATE_FORMAT': 'l, jS F Y',
         'HEADER_TIME_FORMAT': 'H:i',
 

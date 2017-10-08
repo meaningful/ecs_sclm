@@ -13,4 +13,6 @@ urlpatterns = [
     # url(r'^(?P<folder_name>[\w\-]+)/$',views.directory_listing,name='directory_listing'),
     url(r'^wechat/$', WeChat.as_view()),
     url(r'^get_openid', views.index, name='get_openid'),
+    url(r'^go_search/$', views.go_search, name='go_search'),
+    url(r'^search/$', views.search, name='search')
 ]

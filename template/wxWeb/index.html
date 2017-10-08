@@ -1,8 +1,9 @@
+{% load i18n admin_static %}
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
-    <title>WeUI Demo</title>
+    <title>素材库</title>
     <link rel="stylesheet" href="http://res.wx.qq.com/open/libs/weui/0.4.0/weui.min.css">
     <link rel="stylesheet" href="/static/css/base.css">
     <link rel="stylesheet" href="/static/css/index.css">
@@ -21,12 +22,14 @@
 
     <div class="titlePanelDiv">
     	<div class="titleTextDiv">
-    	<text class="titleText">素材库</text>
-    	</div>
-    </div>
-
-    <div class="content" id="content">
+    	    <div class="titleText" style="padding-left:12px;">素材库
+	         <img src="{% static "operation/img/ic_search.png" %}" style=" padding-top:8px;"  width="24" height="24" align="right"  onclick="go_search()"/> </span>
+	   </div>
 	</div>
+   </div>
+    
+
+    <div class="content" id="content"></div>
 
     <script type="text/javascript">
         function generateList() {
@@ -140,6 +143,10 @@
              window.location.href="register.html"
             //window.location.href={{picName.url}}
         }
+	
+	function go_search(){
+	    window.location.href="{% url 'go_search' %}";
+	}
 
     </script>
 

@@ -1,0 +1,47 @@
+{% load i18n admin_static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+  <title>文件搜索</title>
+    {% block stylesheet %}
+    <link rel="stylesheet" type="text/css" href="{% static "operation/css/style.css"  %}" />
+    <link rel="stylesheet" type="text/css" href="http://res.wx.qq.com/open/libs/weui/0.4.0/weui.min.css">
+    {% endblock %}
+    <script src="{% static "operation/js/jquery-1.8.3.min.js" %}" type="text/javascript"></script>
+    <script type="text/javascript">
+      function checkNull(){
+            var searchText = $(" #search ").val();
+            if(searchText.replace(/(^\s*)|(\s*$)/g, '') == '' ){
+                 $('#msg').show();
+                 $('#msg_detail').html("搜索内容不能为空！");
+                 return false;
+              }else{
+                  $.getJSON("{% url 'search' %}",{search_text:searchText});
+                return true;
+            }
+        }
+    </script>
+</head>
+
+<body>
+	<div class="titlePanelDiv">
+    	<div class="titleTextDiv">
+    	   <text class="titleText ">文件搜索</text>
+    	</div>
+
+    </div>
+  <form class="search"  method="get" enctype="multipart/form-data">
+  <input id="search" type="search" placeholder="请输入文件名">
+  <button type="submit" onclick="return checkNull()">搜索</button>
+      <div>
+          <p id="msg">温馨提示：<span id='msg_detail' class="msg_detail_style"></span></p>
+      </div>
+</form>
+
+</body>
+
+</html>

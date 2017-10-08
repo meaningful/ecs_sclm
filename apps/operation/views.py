@@ -12,7 +12,7 @@ from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
-from filer.models import Folder, FolderRoot
+from filer.models import Folder, FolderRoot, File, FilePermission
 from yunpian.SmsOperator import SmsOperator
 from django.template import Context , loader
 from .utils import DBHelper
@@ -28,6 +28,7 @@ from lxml import etree
 import urllib2
 import json
 from django.urls import reverse
+from django.db.models import Q
 reload(sys)
 sys.setdefaultencoding('utf-8')
 #APIKEY = '7d30dd097278b7a073e99d548aa54c1d'
@@ -95,7 +96,7 @@ def index(request):
         if agent_levename:
             group = format_group(str(customerclass)+str(agent_levename))
             request.session['user_group'] = group
-            return  HttpResponseRedirect(reverse('directory_listing',args=(1,)))
+    return  HttpResponseRedirect(reverse('directory_listing',args=(1,)))
             
     
 def get_openid(appid,appsecret,code):
@@ -157,6 +158,7 @@ def directory_listing(request, folder_id=None):
         folderlist = []
         # hasgroup = request.GET.get('group')
         if hasgroup:
+            # listoffiledir = list(folder.get_childfile_read(group=u'微信三草两木三级代理'))
             listoffiledir = list(folder.get_childfile_read(group=hasgroup))
             can_read_folder = folder.get_childfolder_read(group=hasgroup)
             for id in can_read_folder:
@@ -213,6 +215,7 @@ def phone_bind(request):
                     DBHelper.sql_tab_zsk_userinfo_insert.format("\'" + open_id + "\'", "\'" + agent_wx + "\'"))
                 user_info = get_user_info(agent_wx, customerclass)
                 group = format_group(str(customerclass) + str(user_info[1]))
+                # request.session['user_group'] = u'微信三草两木三级代理'
                 request.session['user_group'] = group
                 # return requests.post(settings.ALLOWED[0]+reverse('directory_listing',args=(1,)), data=json.dumps({'group': group}))
                 # return HttpResponseRedirec
@@ -230,6 +233,19 @@ def phone_bind(request):
     return render(request,'operation/phone_bind.html', context)
 
 
+
+# 跳转到search页面
+def go_search(request):
+    return render(request,'operation/search.html')
+
+
+# 处理search请求
+def search(request):
+    if request.method == 'GET':
+        search_text = request.GET.get('search_text')
+        print search_text
+
+        return HttpResponseRedirect(reverse('index'))
 
 
 """
@@ -321,11 +337,12 @@ def format_group(group):
     str_wx = '微信'
     str_zt = '总代'
     str_ztl = '总代理'
+    
 
-    if str(group).find('微信') != 0:
+    if str(group).find('微信') == -1:
         group = str_wx + str(group)
 
-    if str(group).find(str_ztl) != 0:
+    if str(group).find(str_ztl) != -1:
         group = str(group).replace(str_ztl, str_zt)
 
     return str(group)
