@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
-    <title>微信号绑定</title>
+    <title>代理身份绑定</title>
     {% block stylesheet %}
     <link rel="stylesheet" type="text/css" href="{% static "operation/css/register.css" %}" />
     <link rel="stylesheet" type="text/css" href="{% static "operation/css/base.css" %}" />
@@ -22,7 +22,10 @@
                              $.getJSON("{% url 'send_msg' %}",{agent_wx:agentWx}, function(ret){
                                     $('#msg').show();
                                     $('#msg_detail').html(ret.msg);
-                                    countDown();
+                                    console.log(ret)
+                                    if(ret.hasOwnProperty("code") && ret.code == 0){
+                                        countDown();
+                                    }
                               })
                         }
                     })
@@ -33,9 +36,10 @@
             var verifyCode = $(" #verify_code ").val();
             if(agentWx.replace(/(^\s*)|(\s*$)/g, '') == '' || verifyCode.replace(/(^\s*)|(\s*$)/g, '') == ''){
                  $('#msg').show();
-                 $('#msg_detail').html("微信号或者验证码输入为空！");
+                 $('#msg_detail').html("微信号或验证码输入为空！");
                  return false;
               }else{
+                disabledSubmit()
                 return true;
             }
         }
@@ -63,7 +67,7 @@
 <body>
 	<div class="titlePanelDiv">
     	<div class="titleTextDiv">
-    	   <text class="titleText">微信号绑定</text>
+    	   <text class="titleText ">代理身份绑定</text>
     	</div>
     </div>
 <form method = 'post' enctype="multipart/form-data">
@@ -72,30 +76,30 @@
         <div class="weui_cells weui_cells_form form">
             <div class="weui_cell weui_cell_vcode">
                 <div class="weui_cell__hd">
-                    <label class="weui_label">{{uform.agent_wx.label}}</label>
+                    <label class="weui_label" style="width:3rem;font-size:0.8em;">{{uform.agent_wx.label}}</label>
                 </div>
                 <div class="weui_cell__bd numberInputDiv">
-                    <input  id="agent_wx"  name="agent_wx" class="weui_input numberInput" type="text" maxlength="50" placeholder="请输入微信号"/></div>
-                    <button id="get_code" type="button" class="weui_vcode_btn codeButton">获取验证码</button>
-                    <button id="reset_code" type="button" class="weui_vcode_btn codeButton" style="display:none;"><span id="count_second">60</span>秒后重新获取</button>
+                    <input  id="agent_wx"  name="agent_wx" class="weui_input numberInput" style="font-size:0.75em;" type="text" maxlength="50" placeholder="请输入微信号"/></div>
+                    <button id="get_code" type="button" class="weui_vcode_btn codeButton "><nobr>获取验证码</nobr></button>
+                    <button id="reset_code" type="button" class="weui_vcode_btn codeButton" style="display:none;"><nobr><span id="count_second">60</span>秒后重新获取</nobr></button>
 				</div>
 
             <div class="weui_cell weui_cell_vcode">
                 <div class="weui_cell__hd">
-                    <label class="weui_label">{{uform.verify_code.label}}</label>
+                    <label class="weui_label" style="width:3rem;font-size:0.8em;">{{uform.verify_code.label}}</label>
                 </div>
                 <div class="weui_cell__bd codeButtonDiv">
-                    <input id="verify_code"  name="verify_code" class="weui_input codeInput" type="number"  placeholder="请输入验证码"/>
+                    <input id="verify_code"  name="verify_code" class="weui_input codeInput " style="font-size:0.75em;" type="number"  placeholder="请输入验证码"/>
                 </div>
             </div>
     	</div>
         <div>
-            <p id="msg" style="display:none;margin-top:1%;margin-left:1%;font-size:14px;color:#2288BB;" >温馨提示：<span id='msg_detail'  style="font-size:12px;color:#FF0000;"></span></p>
+            <p id="msg">温馨提示：<span id='msg_detail' class="msg_detail_style"></span></p>
         </div>
         <div>
-            <p style="margin-top:1%;margin-left:1%;"><span id='tip' style="font-size:12px;color:#FF0000;">说明：短信验证码将发送到该微信号在本系统中已绑定的手机号上</span></p>
+            <p id="explain">说&nbsp;&nbsp;明：<span class="msg_detail_style">请输入您申请代理时预留的微信号进行身份绑定，短信验证码将发送至您申请代理时预留的手机号码，如需更改请联系客服。</span></p>
         </div>
-        <div class="submitDiv">
+        <div align="center">
         	<input id="submit_btn" type="submit" value="确认绑定" class="submitButton" onclick="return checkNull()" >
         </div>
     </div>

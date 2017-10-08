@@ -1,0 +1,147 @@
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+    <title>WeUI Demo</title>
+    <link rel="stylesheet" href="http://res.wx.qq.com/open/libs/weui/0.4.0/weui.min.css">
+    <link rel="stylesheet" href="/static/css/base.css">
+    <link rel="stylesheet" href="/static/css/index.css">
+    <!-- <script src="js/index.js" type="text/javascript"></script> -->
+    <!-- <script type="text/javascript" src="/static/js/jquery-1.2.6.pack.js"></script> -->
+    <!-- <script type="text/javascript" src="/static/js/content_zoom.js"></script> -->
+    <!-- <script type="text/javascript"> -->
+    <!-- $(document).ready(function() { -->
+    <!-- /* $('div.small_pic a').fancyZoom({scaleImg: true, closeOnClick: true});*/ -->
+    <!-- $('a').fancyZoom({scaleImg: true, closeOnClick: true}); -->
+    <!-- }); -->
+    <!-- </script> -->
+
+</head>
+<body onload="generateList()">
+
+    <div class="titlePanelDiv">
+    	<div class="titleTextDiv">
+    	<text class="titleText">素材库</text>
+    	</div>
+    </div>
+
+    <div class="content" id="content">
+	</div>
+
+    <script type="text/javascript">
+        function generateList() {
+            var content = document.getElementById("content");
+            var rowDiv ;
+            var count = 0 ; 
+         {% for folder in foldlist %}
+                if (count%2 == 0) {
+                    rowDiv = document.createElement("div");
+                    rowDiv.setAttribute("class", "rowDiv");
+                }
+                    {% load thumbnail %}
+                    count++ ;
+                    var gridItem = document.createElement("div");
+                    gridItem.setAttribute("class", "gridItem");
+
+                    var link = document.createElement("a");
+                    //link.setAttribute("href", "commodityDetail.html");
+                    link.setAttribute("href", "{% url 'directory_listing' folder.id %}");
+
+                    var gridImg = document.createElement("img");
+                    gridImg.setAttribute("class", "gridImg");
+                   	{% if folder.diricon %}
+                    {% load thumbnail %}
+				            gridImg.setAttribute("src", "{% thumbnail folder.diricon 50x50 crop %}");
+		              	{% else %}
+				            gridImg.setAttribute("src", "/media/img/ic_folder.png");
+		               	{% endif %}
+
+
+                    var gridText = document.createElement("input");
+                    gridText.setAttribute("class", "gridText");
+                    gridText.setAttribute("value", "{{folder.name}}".substring(0,6));
+                    gridText.setAttribute("type", "text");
+                    gridText.setAttribute("disabled", "true");
+
+                    gridItem.appendChild(gridImg);
+                    gridItem.appendChild(gridText);
+                    link.appendChild(gridItem);
+
+                    rowDiv.appendChild(link);
+
+                    content.appendChild(rowDiv);
+            {% endfor %}
+
+
+//            count = 0 ;
+            {% for file in filepath %}
+                
+                if (count%2 == 0) {
+                    rowDiv = document.createElement("div");
+                    rowDiv.setAttribute("class", "rowDiv");
+                }
+                count++ ; 
+                var gridItem = document.createElement("div");
+                gridItem.setAttribute("class", "gridItem");
+
+                var link = document.createElement("a");
+                
+            {% if file.file_type == "Video" %}
+            link.setAttribute("href", "{{file.videourl}}");
+            {% else %}
+                link.setAttribute("href", "{{file.canonical_url}}");
+             {% endif %}
+                var gridImg = document.createElement("img");
+                gridImg.setAttribute("class", "gridImg");
+// 	  	gridImg.setAttribute("src", "{{file.url}}");
+                {% if file.file_type == "Image" %}
+                  
+		            gridImg.setAttribute("src", "{{file.icons.180}}");
+              {% elif file.file_type == "Video" %}
+				          gridImg.setAttribute("src", "/media/img/video.png"); 
+                {% elif file.extension == "docx" %}
+				          gridImg.setAttribute("src", "/media/img/doc.png");  
+                 {% elif file.extension == "doc" %}
+				          gridImg.setAttribute("src", "/media/img/doc.png");
+
+                {% elif file.extension == "ppt" %}
+				          gridImg.setAttribute("src", "/media/img/ppt.png");
+
+                {% elif file.extension == "pptx" %}
+				          gridImg.setAttribute("src", "/media/img/ppt.png");
+
+                {% elif file.extension == "xls" %}
+				          gridImg.setAttribute("src", "/media/img/xls.png");
+            
+                {% elif file.extension == "xlsx" %}
+				          gridImg.setAttribute("src", "/media/img/xls.png");
+            {% else %}
+				          gridImg.setAttribute("src", "/media/img/unknown.png");
+                {% endif %}
+ 		//gridImg.setAttribute("src", "{{picName.url}}");
+                var gridText = document.createElement("input");
+                gridText.setAttribute("class", "gridText");
+                gridText.setAttribute("value", "{{file.name}}".substring(0,6));
+                gridText.setAttribute("type", "text");
+                gridText.setAttribute("disabled", "true");
+
+                gridItem.appendChild(gridImg);
+                gridItem.appendChild(gridText);
+                link.appendChild(gridItem);
+
+                rowDiv.appendChild(link);
+           
+                content.appendChild(rowDiv);
+
+             {% endfor %}
+        }
+
+        function navigatorTo() {
+             window.location.href="register.html"
+            //window.location.href={{picName.url}}
+        }
+
+    </script>
+
+</body>
+</html>

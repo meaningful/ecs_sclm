@@ -124,9 +124,9 @@
                                         {% endif %}
                                     </strong>
                                 </div>
-                                {% if enable_permissions %}
-                                    <div>{% trans "Permissions" %}: {% if file.is_public %}{% trans "disabled" %}{% else %}{% trans "enabled" %}{% endif %}</div>
-                                {% endif %}
+                                <!-- {% if enable_permissions %} -->
+                                <!-- <div>{% trans "Permissions" %}: {% if file.is_public %}{% trans "disabled" %}{% else %}{% trans "enabled" %}{% endif %}</div> -->
+                                <!-- {% endif %} -->
                             </td>
                             <td class="column-owner">
                                 {{ file.owner|default:"n/a" }}

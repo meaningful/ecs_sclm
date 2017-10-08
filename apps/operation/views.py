@@ -30,7 +30,8 @@ import json
 from django.urls import reverse
 reload(sys)
 sys.setdefaultencoding('utf-8')
-APIKEY = '7d30dd097278b7a073e99d548aa54c1d'
+#APIKEY = '7d30dd097278b7a073e99d548aa54c1d'
+APIKEY = '6dfa92857a0c6c6c963b42e0f09e1565'
 global appid
 global appsecret
 
@@ -204,7 +205,7 @@ def directory_listing(request, folder_id=None):
             virtual_items = []
 
 
-        template = loader.get_template('operation/index3.html')
+        template = loader.get_template('wxWeb/index.html')
         context = Context({
         'filepath': listoffiledir,
         'foldlist': folderlist,
@@ -262,6 +263,8 @@ def phone_bind(request):
             # 获取session中的agent_wx 和 验证码
             session_agent_wx = request.session.get('session_id_agent_wx')
             session_msg_verify_code = request.session.get('session_id_msg_verify_code')
+	    if not open_id or not agent_wx or not session_agent_wx or not verify_code or not session_msg_verify_code:
+                return render(request,'operation/phone_bind_error.html',{})
             # 以session 中的验证码和微信号一致为绑定成功的判断条件
             if agent_wx == session_agent_wx and verify_code == session_msg_verify_code:
                 DBHelper.insert(
@@ -290,8 +293,8 @@ def phone_bind(request):
 """
 短信验证码
 """
-# 验证码有效期 (验证码有效期设置为15分钟，通Session 有效期保持一致，Session有效期设置在 settings.py 中)
-session_age_time = u'15分钟'
+# 验证码有效期 (验证码有效期设置为10分钟，通Session 有效期保持一致，Session有效期设置在 settings.py 中)
+session_age_time = u'10分钟'
 
 # 发送短信验证码
 def send_msg(request):
@@ -302,7 +305,7 @@ def send_msg(request):
         user_info = get_user_info(agent_wx, customerclass)
         user_phone = user_info[0]
         if not user_phone:
-            result = {u'msg': u'绑定的手机号有误或者不存在！'}
+            result = {u'msg': u'该微信号尚未成为正式代理/经销商，请检查后再次输入！'}
             return HttpResponse(json.dumps(result, ensure_ascii=False), content_type='application/json')
 
         verify_code = generate_verify_code()
@@ -310,7 +313,6 @@ def send_msg(request):
         request.session['session_id_msg_verify_code'] = verify_code
         # format 短信内容
         msg_info = list([])
-        msg_info.append(str(user_phone))
         msg_info.append(verify_code)
         msg_info.append(session_age_time)
         data = format_msg(str(user_phone), msg_info)
@@ -318,9 +320,8 @@ def send_msg(request):
         smsOperator = SmsOperator(APIKEY)
         result = smsOperator.single_send(data)
         if result.content["code"] == 0:
-            result.content["msg"] = u'验证码已发送至:'+str(user_phone)+u',请注意查收！'
+            result.content["msg"] = u'验证码已发送至尾号:'+str(user_phone)[-4:]+u'的手机,请注意查收！'
         return HttpResponse(json.dumps(result.content, ensure_ascii=False), content_type='application/json')
-
 
 # 查询用户信息
 def get_user_info(agent_wx, customerclass):
@@ -367,8 +368,8 @@ def format_msg(phone, l):
     msg_data = {}
     if verify_phone(phone):
         msg_data['mobile'] = str(phone)
-    if l.__len__() == 3:
-        msg_text = u'【微言信息】亲爱的%s，您的验证码是%s。有效期为%s，请尽快验证' % (l[0],l[1],l[2])
+    if l.__len__() == 2:
+        msg_text = u'【上海传美】欢迎使用传美知识库，您的手机验证码是%s，有效期为%s，如非本人操作请忽略本信息。' % (l[0],l[1])
         msg_data['text'] = msg_text
     return msg_data
 

@@ -1,0 +1,60 @@
+
+.content {
+	width: 100%;
+}
+
+.rowDiv {
+	width: 100%;
+	display: inline-flex;
+}
+
+a {
+	display:flex;
+	justify-content: center;
+	align-items: center;
+	border: 1px solid #ddd;
+        border-top: none;
+        border-left:none;
+	width: 49%;
+	text-align: center;
+}
+
+.gridItem {
+	margin: 1%;
+	padding: 2%;
+  width: 94%;
+  height: auto;
+}
+
+.gridImg {
+/*	max-width: 50%;
+	max-height:100%;*/
+	width: 70%;
+	height: auto;
+        padding: 15%;
+}
+
+.gridText {
+	width: 100%;
+	padding-top: 10px;
+	text-align: center;
+	display: block;
+	border: none;
+	background: white;
+	color: #0C462E;
+	font-weight: bold;
+	font-size: 1em;
+}
+
+.gridButton {
+	width: 70%;
+	margin-top: 1%;
+	margin-bottom: 1%;
+	padding-top: 3%;
+	padding-bottom: 3%;
+	text-align: center;
+	border: 1px;
+	border-radius: 20px;
+	background: #e0ede3;
+	color: #004E28;
+}

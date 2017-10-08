@@ -1,17 +1,16 @@
 .titlePanelDiv {
-	height: 10%;
 	text-align: center;
-	background:#FF0080;
+	background: #E0EDE3;
 	vertical-align: middle;
 }
 
 .titleTextDiv {
 	padding-top: 10px;
-
+        padding-bottom: 10px;
 }
 
 .titleText {
 	font-size: 1.5em;
-	color: white;
+	color: #0C462E;
 } 
 

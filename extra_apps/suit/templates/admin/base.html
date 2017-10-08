@@ -99,10 +99,11 @@
             {% if not is_popup %}
               {% block breadcrumbs %}
                 <ul class="breadcrumb">
-                  <li><a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
-                    {% if title %}
-                      <span class="divider">&raquo;</span>
-                      </li>
+                    <li>
+                        <!-- <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a> -->
+                        <!-- {% if title %} -->
+                        <!-- <span class="divider">&raquo;</span> -->
+                    </li>
                       <li class="active">
                       {{ title }}
                     {% endif %}

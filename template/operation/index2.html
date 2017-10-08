@@ -36,7 +36,7 @@
             {% load thumbnail %}
             <!-- <img src="{{folder.diricon.avator.url}}" alt=" " > -->
             <!-- - 显示文件夹图片的缩略图 -->
-            <img src="{% thumbnail folder.diricon 50x50 crop %}" alt=" " /><br/>
+            <img src="{% thumbnail folder.diricon 50*50 crop %}" alt=" " /><br/>
             <!-- <img src="{{ folder.diricon.avatar.url }}" alt=" " /> -->
             {% endif %}
             {% endfor %}

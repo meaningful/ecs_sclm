@@ -15,9 +15,16 @@ def index(request):
     # listoffiledir = [singlefile.file for singlefile in fileindexfolder.files ]
     hasuser = 'sclmmanager'
     listoffiledir = list(fileindexfolder.get_childfile_read())
-    template = loader.get_template('index.html')
+    can_read_folder = list(fileindexfolder.get_childfolder_read())
+#    can_read_folder = fileindexfolder.get_children()
+    folderlist = []
+    for id in can_read_folder:
+    	fold = Folder.objects.get(id=id)
+	folderlist.append(fold)
+    template = loader.get_template('wxWeb/index.html')
     context = Context({
         'filepath':listoffiledir,
+	'foldlist': folderlist,
     })
     #print template.render(context)
     return HttpResponse(template.render(context))

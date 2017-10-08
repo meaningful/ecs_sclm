@@ -120,7 +120,7 @@ class File(PolymorphicModel, mixins.IconsMixin):
     has_all_mandatory_data = models.BooleanField(_('has all mandatory data'), default=False, editable=False)
 
     original_filename = models.CharField(_('original filename'), max_length=255, blank=True, null=True)
-    name = models.CharField(max_length=255, default="", blank=True,
+    name = models.CharField(max_length=255, default="", blank=True, 
         verbose_name=_('name'))
     description = models.TextField(null=True, blank=True,
         verbose_name=_('description'))
@@ -498,7 +498,7 @@ class FilePermission(models.Model):
     # can_add_children = models.SmallIntegerField(_("can add children"), choices=PERMISIONS, blank=True, null=True, default=None)
     objects = FilePermissionManager()
     name = models.CharField(max_length=255, default="", blank=True,
-        verbose_name=_('name'))
+                            unique=True, verbose_name=_('name'))
     def __str__(self):
         return self.name
         # if self.file:
@@ -540,5 +540,5 @@ class FilePermission(models.Model):
     class Meta(object):
         verbose_name = _('file permission')
         # verbose_name = (u'文件权限')
-        verbose_name_plural = (u'文件权限')
+        verbose_name_plural = (u'角色')
         app_label = 'filer'
