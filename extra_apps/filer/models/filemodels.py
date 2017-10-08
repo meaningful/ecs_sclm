@@ -494,7 +494,7 @@ class FilePermission(models.Model):
     everybody = models.BooleanField(_("everybody"), default=False)
 
     can_edit = models.SmallIntegerField(_(u"can edit"), choices=PERMISIONS, blank=True, null=True, default=None)
-    can_read = models.SmallIntegerField((u"读"), choices=PERMISIONS, blank=True, null=True, default=None)
+    can_read = models.SmallIntegerField((u"读"), choices=PERMISIONS, blank=True, null=True, default=True)
     # can_add_children = models.SmallIntegerField(_("can add children"), choices=PERMISIONS, blank=True, null=True, default=None)
     objects = FilePermissionManager()
     name = models.CharField(max_length=255, default="", blank=True,

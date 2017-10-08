@@ -202,11 +202,11 @@ class FilePermissionAdminChangeFrom(forms.ModelForm):
 
 class FilePermissionAdmin(admin.ModelAdmin):
     # list_display = ('name', 'can_read', 'can_edit', 'everybody')
-    list_display = ('name', 'can_read')
+    list_display = ('name', )
     search_fields = ['name']
     form = FilePermissionAdminChangeFrom
     # fields = ('name', 'can_read', 'can_edit', 'everybody', 'groups')
-    fields = ('name', 'can_read', 'groups')
+    fields = ('name', 'groups')
 
     def get_queryset(self, request):
         qs = super(FilePermissionAdmin, self).get_queryset(request)
