@@ -1,0 +1,44 @@
+
+.content {
+	width: 100%;
+}
+
+.rowDiv {
+	width: 100%;
+	display: inline-flex;
+}
+
+.gridItem {
+	display: inline-block;
+	margin: 1px;
+	text-align: center;
+}
+
+.gridImg {
+	max-width: 100%;
+	width: auto;
+	height: auto;
+}
+
+.gridText {
+	width: 100%;
+	margin-top: 1%;
+	text-align: center;
+	display: block;
+	border: none;
+	background: white;
+	font-size: 1em;
+}
+
+.gridButton {
+	width: 70%;
+	margin-top: 1%;
+	margin-bottom: 1%;
+	padding-top: 3%;
+	padding-bottom: 3%;
+	text-align: center;
+	border: 1px;
+	border-radius: 20px;
+	background: #e0ede3;
+	color: #0c462e;
+}

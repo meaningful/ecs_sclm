@@ -1,3 +1,5 @@
+
+# -*- coding: utf-8 -*-
 """
 Django settings for sclmknowledge project.
 
@@ -25,7 +27,7 @@ SECRET_KEY = 'c@r!33k6o_jcclh0!$)y$%g3$2=%dcpl+-qk@k^5yp$f391ja#'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['47.93.228.118', ]
+ALLOWED_HOSTS = ['120.76.152.10','zsk.shcmerp.com', ]
 
 
 # Application definition
@@ -33,6 +35,7 @@ ALLOWED_HOSTS = ['47.93.228.118', ]
 INSTALLED_APPS = [
     'filer',
     'suit',
+    'debug_toolbar',
     'django_extensions',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -55,6 +58,7 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
@@ -85,10 +89,12 @@ WSGI_APPLICATION = 'sclmknowledge.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': "sclm",
-        'USER': 'root',
-        'PASSWORD': 'WLW2017test',
-        'HOST': '127.0.0.1',
+        'NAME': "zsk",
+        'USER': 'zsk',
+        'PASSWORD': 'ZSK12ab3456',
+        # 'HOST': '127.0.0.1',
+        'HOST':'rds0d1o55s4h288856b2.mysql.rds.aliyuncs.com',
+        'PORT': '3306',
 }
 
 }
@@ -138,7 +144,7 @@ STATIC_URL = '/static/'
 #     os.path.join(BASE_DIR, "static"),
 #     )
 STATIC_ROOT = (
-    '/root/WorkSpace/sclmknowledge/static'
+    '/root/prj/ecs_sclm/static'
 )
 FILER_CANONICAL_URL = 'media/'
 FILER_DEBUG = True
@@ -152,11 +158,42 @@ THUMBNAIL_PROCESSORS = (
     'filer.thumbnail_processors.scale_and_crop_with_subject_location',
     'easy_thumbnails.processors.filters',
 )
+# MEDIA_URL = '/media/'
 MEDIA_URL = '/media/'
-#MEDIA_ROOT = ('/home/ossfs/media')
+MEDIA_ROOT = ('/home/media')
 
-MEDIA_ROOT = ('/home/localmediafiles')
+#MEDIA_ROOT = ('/home/localmediafiles')
+# INTERNAL_IPS = ('127.0.0.1',)
+DEBUG_TOOLBAR_CONFIG = {'JQUERY_URL': r"http://code.jquery.com/jquery-2.1.1.min.js", }
 
+DEBUG_TOOLBAR_PANELS = [
+    'debug_toolbar.panels.versions.VersionsPanel',
+    'debug_toolbar.panels.timer.TimerPanel',
+    'debug_toolbar.panels.settings.SettingsPanel',
+    'debug_toolbar.panels.headers.HeadersPanel',
+    'debug_toolbar.panels.request.RequestPanel',
+    'debug_toolbar.panels.sql.SQLPanel',
+    'debug_toolbar.panels.staticfiles.StaticFilesPanel',
+    'debug_toolbar.panels.templates.TemplatesPanel',
+    'debug_toolbar.panels.cache.CachePanel',
+    'debug_toolbar.panels.signals.SignalsPanel',
+    'debug_toolbar.panels.logging.LoggingPanel',
+    'debug_toolbar.panels.redirects.RedirectsPanel',
+]
 
+SUIT_CONFIG = {
+    'MENU_OPEN_FIRST_CHILD': True,
+    'MENU': (
+        # {'label': u'设置', 'icon': 'icon-cog', 'models': ('auth.group')},
+        {'app': 'filer', 'label':u'知识库管理','models':('Folder','Video')},
+        {'label': u'设置', 'icon':'icon-cog', 'models': (
+            # 'auth.group', 
 
+            {'url': '/admin/filer/filepermission/', 'label': u'角色'},
+            {'url': '/admin/admin/logentry/', 'label': u'日志'},
+            
+            {'model': 'auth.user', 'label': u'用户'},
+        )},
+    )
+    }
 

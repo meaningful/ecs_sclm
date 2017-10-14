@@ -8,7 +8,8 @@ from django.utils.translation import string_concat, ugettext_lazy
 from ..models import Image
 from ..thumbnail_processors import normalize_subject_location
 from .fileadmin import FileAdmin
-
+from ..models import File,FilePermission
+from django.db.models import Q
 
 class ImageAdminForm(forms.ModelForm):
     subject_location = forms.CharField(
@@ -86,6 +87,16 @@ class ImageAdminForm(forms.ModelForm):
 
 class ImageAdmin(FileAdmin):
     form = ImageAdminForm
+    def get_filepermission(self, request):
+        qs = FilePermission.objects.all()
+        if request.user.is_superuser:
+            return qs
+        else:
+            group_ids = request.user.groups.all().values_list('id', flat=True)
+            q = Q(groups__in=group_ids) | Q(everybody=True)
+            return qs.filter(q).distinct()
+    get_filepermission.short_description = u'文件权限'
+
 
 
 ImageAdmin.fieldsets = ImageAdmin.build_fieldsets(

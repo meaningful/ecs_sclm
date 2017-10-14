@@ -11,7 +11,7 @@
                 </th>
                 <th class="column-icon">&nbsp;</th>
                 <th class="column-name">{% trans "Name" %}</th>
-                <th class="column-owner">{% trans "Owner" %}</th>
+                <!-- <th class="column-owner">{% trans "Owner" %}</th> -->
                 <th class="column-size">{% trans "Size" %}</th>
                 <th class="column-action">{% trans "Action" %}</th>
             </tr>
@@ -64,9 +64,9 @@
                                     </a>
                                 </div>
                             </td>
-                            <td class="column-owner">
-                                {{ subfolder.owner|default:"n/a" }}
-                            </td>
+                            <!-- <td class="column-owner"> -->
+                            <!-- {{ subfolder.owner|default:"n/a" }} -->
+                            <!-- </td> -->
                             <td class="column-size">
                                 {% if not subfolder.is_root %}
                                     <span class="tiny">
@@ -124,13 +124,13 @@
                                         {% endif %}
                                     </strong>
                                 </div>
-                                {% if enable_permissions %}
-                                    <div>{% trans "Permissions" %}: {% if file.is_public %}{% trans "disabled" %}{% else %}{% trans "enabled" %}{% endif %}</div>
-                                {% endif %}
+                                <!-- {% if enable_permissions %} -->
+                                <!-- <div>{% trans "Permissions" %}: {% if file.is_public %}{% trans "disabled" %}{% else %}{% trans "enabled" %}{% endif %}</div> -->
+                                <!-- {% endif %} -->
                             </td>
-                            <td class="column-owner">
-                                {{ file.owner|default:"n/a" }}
-                            </td>
+                            <!-- <td class="column-owner"> -->
+                            <!-- {{ file.owner|default:"n/a" }} -->
+                            <!-- </td> -->
                             <td class="column-size">
                                 <span class="tiny"> ({{ file.size|filesize:"auto1000long" }}{% ifequal file.file_type "Image" %}, {{ file.width }}x{{ file.height }} px{% endifequal %})</span>
                             </td>

@@ -1,0 +1,35 @@
+.imgDiv{
+    text-align:center;
+    margin-top:10%;   
+}
+
+.msgDiv {
+    margin-top:10%;
+    text-align:center;
+    margin:0 auto
+}
+
+.msgDt {
+    margin-top:2%;
+    margin-left:5%;
+    margin-right:5%;
+    font-size: 0.9em;
+    color:#004E2B;
+}
+
+.msgDtRetry {
+    margin-top:2%;
+    margin-left:5%;
+    margin-right:5%;
+    font-size: 0.9em;
+    color:#004E2B;
+}
+
+.msg {
+    margin-top:2%;
+    margin-left:10%;
+    margin-right:2%;
+    font-size: 0.8em;
+    color:#004E2B;
+    list-style-type:decimal
+}

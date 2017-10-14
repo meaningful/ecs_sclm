@@ -1,0 +1,58 @@
+{% load i18n admin_static %}
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+    <title>代理身份绑定失败</title>
+    {% block stylesheet %}
+    <link rel="stylesheet" type="text/css" href="{% static "operation/css/error.css" %}" />
+    <link rel="stylesheet" type="text/css" href="{% static "operation/css/base.css" %}" />
+    <link rel="stylesheet" type="text/css" href="http://res.wx.qq.com/open/libs/weui/0.4.0/weui.min.css">
+    {% endblock %}
+    <script src="{% static "operation/js/jquery-1.8.3.min.js" %}" type="text/javascript"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            countDown();
+        });
+
+        function countDown(){
+	        $('#time').html('15');
+	        var second = 15;
+	        var timer = null;
+	        timer = setInterval(function(){
+		            second -= 1;
+		            if(second >0 ){
+			            $('#time').html(second);
+		            }else{
+			            clearInterval(timer);
+			            history.back(-1)
+		            }
+	        },1000);
+        }
+
+    </script>
+</head>
+<body>
+	<div class="titlePanelDiv">
+    	<div class="titleTextDiv" style="padding-top:10px;">
+    	   <text class="titleText ">代理身份绑定失败</text>
+    	</div>
+    </div>
+    <div class="imgDiv" >
+        <img src="{% static "operation/img/sad_face.jpg" %}" width="200" />
+    </div>
+    <div class="msgDiv">
+        <dl>
+            <dt class="msgDt"><p style="text-align:left;">我们非常抱歉，您的代理身份绑定失败，可能原因如下：</p></dt>
+            <dd>
+                <ul class="msg" >
+                    <li style="text-align:left;">微信OpenID获取失败；</li>
+                    <li style="text-align:left;">验证码超时失效；</li>
+                    <li style="text-align:left;">服务器暂时不可用；</li>
+                </ul>
+            </dd>
+            <dt class="msgDtRetry"><p style="text-align:left;"> 请稍后重试！&nbsp;&nbsp;<span id="time" style="color:red;">15</span> &nbsp;秒后将自动返回！</dt>
+        </dl>
+    </div>
+</body>
+</html>

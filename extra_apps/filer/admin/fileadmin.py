@@ -14,7 +14,7 @@ from .permissions import PrimitivePermissionAwareModelAdmin
 from .tools import AdminContext, admin_url_params_encoded, popup_status
 
 from django.forms import CheckboxSelectMultiple
-
+from django.db.models import Q
 # class FilerPermissionInline(admin.TabularInline):
 #     model = FilePermission
 
@@ -58,14 +58,14 @@ class FileAdmin(PrimitivePermissionAwareModelAdmin):
             (None, {
                 'fields': (
                     'name',
-                    'owner',
+                    # 'owner',
                     'description',
                 ) + extra_main_fields,
             }),
             (_('Advanced'), {
                 'fields': (
                     'file',
-                    'sha1',
+                    # 'sha1',
                     'display_canonical',
                 ) + extra_advanced_fields,
                 'classes': ('collapse',),
@@ -180,6 +180,17 @@ class FileAdmin(PrimitivePermissionAwareModelAdmin):
     display_canonical.allow_tags = True
     display_canonical.short_description = _('canonical URL')
 
+    #############chenyu change
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if not request.user.is_superuser:  
+            if db_field.name == "perm":
+                qs = FilePermission.objects.all()
+                group_ids = request.user.groups.all().values_list('id', flat=True)
+                q = Q(groups__in=group_ids) | Q(everybody=True)
+                kwargs['queryset'] = qs.filter(q).distinct()
+        return super(FileAdmin,self).formfield_for_foreignkey(db_field, request, **kwargs)        
+
+
 
 class FilePermissionAdminChangeFrom(forms.ModelForm):
     
@@ -192,12 +203,27 @@ class FilePermissionAdminChangeFrom(forms.ModelForm):
 
 class FilePermissionAdmin(admin.ModelAdmin):
     # list_display = ('name', 'can_read', 'can_edit', 'everybody')
-    list_display = ('name', 'can_read')
+    list_display = ('name', )
     search_fields = ['name']
     form = FilePermissionAdminChangeFrom
     # fields = ('name', 'can_read', 'can_edit', 'everybody', 'groups')
-    fields = ('name', 'can_read', 'groups')
+    fields = ('name', 'groups')
 
+    def get_queryset(self, request):
+        qs = super(FilePermissionAdmin, self).get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        else:
+            group_ids = request.user.groups.all().values_list('id', flat=True)
+            q = Q(groups__in=group_ids) | Q(everybody=True)
+            return qs.filter(q).distinct()
+    def formfield_for_manytomany(self, db_field, request, **kwargs):
+        if not request.user.is_superuser:  
+            if db_field.name == "groups":
+                group_ids = request.user.groups.all().values_list('name', flat=True)
+                kwargs["queryset"] = group_ids
+        return super(FilePermissionAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
 
+    
 FileAdmin.fieldsets = FileAdmin.build_fieldsets()
 admin.site.register(FilePermission, FilePermissionAdmin)

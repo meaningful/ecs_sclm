@@ -105,7 +105,7 @@ class Folder(models.Model, mixins.IconsMixin):
 
     parent = models.ForeignKey('self', verbose_name=('parent'), null=True, blank=True,
                                related_name='children')
-    name = models.CharField(_('name'), max_length=255)
+    name = models.CharField(_('name'), max_length=255, unique=True)
     # name = models.CharField((u'文件名'), max_length=255)
 
     owner = models.ForeignKey(getattr(settings, 'AUTH_USER_MODEL', 'auth.User'), verbose_name=_('owner'),
@@ -221,24 +221,51 @@ class Folder(models.Model, mixins.IconsMixin):
                ispublic_files = self.all_files.filter(ispublic=True)
                files.update(ispublic_files)
             if kw.has_key('user'):
-                hasuser=kw['user']
-                filelist = FilePermission.objects.get_read_id_list(hasuser)
+                hasuser = kw['user']
+                filelist = FilePermission.objects.get_read_id_list(user=hasuser)
                 if filelist == 'All':
-                   files = set(File.objects.all())
+                   # files = set(File.objects.all())
+                    files = self.files
+                    return files
+                elif filelist == 'Guest':
+                    return files
                 else:
-                   for onefile in self.files:
-                       if onefile.id in filelist:
-                        # files.add(File.objects.get(id=onefile))
+                    for onefile in self.files:
+                        if onefile.id in filelist:
+                    # files.add(File.objects.get(id=onefile))
                             files.add(onefile)
-        return files
+                    return files
+            elif kw.has_key('group'):
+                hasgroup = kw['group']
+                filelist = FilePermission.objects.get_read_id_list(group=hasgroup)
+                for onefile in self.files:
+                    if onefile.id in filelist:
+                        files.add(onefile)
+                return files
+            else:
+                return files
 
-    def get_childfolder_read(self, user):
+
+    def get_childfolder_read(self, **kw):
         # from .filemodels import File, FilePermission
         folds = set()
-        for fold in self.get_children():
-            can_read = fold.is_user_read(user)
-            if can_read:
-                folds.add(fold.id)
+        if kw.has_key('user'):
+            user = kw['user']
+            for fold in self.get_children():
+                can_read = fold.is_user_read(user)
+                if can_read:
+                    folds.add(fold.id)
+        elif kw.has_key('group'):
+            group = kw['group']
+            for fold in self.get_children():
+                can_read = fold.is_group_read(group)
+                if can_read:
+                    folds.add(fold.id)
+        else:
+            for fold in self.get_children():
+                can_read = fold.is_guess_read()
+                if can_read:
+                    folds.add(fold.id)
         return folds
 
     def is_user_read(self, user):
@@ -248,11 +275,15 @@ class Folder(models.Model, mixins.IconsMixin):
                 can_read = True
                 return can_read
             else:
-                filelist = FilePermission.objects.get_read_id_list(user)
-                for onefile in self.files:
-                    if onefile.id in filelist:
-                        can_read = True
-                        return can_read
+                filelist = FilePermission.objects.get_read_id_list(user=user)
+                if filelist == 'All':
+                    can_read = True
+                    return can_read
+                else:
+                    for onefile in self.files:
+                        if onefile.id in filelist:
+                            can_read = True
+                            return can_read
         if self.children_count == 0:
             can_read = False
             return can_read
@@ -263,6 +294,47 @@ class Folder(models.Model, mixins.IconsMixin):
                     return can_read
         can_read = False
         return can_read
+
+    def is_group_read(self, group):
+        from .filemodels import File, FilePermission
+        if self.file_count != 0:
+            if self.all_files.filter(ispublic=True).count():
+                can_read = True
+                return can_read
+            else:
+                filelist = FilePermission.objects.get_read_id_list(group=group)
+                for onefile in self.files:
+                    if onefile.id in filelist:
+                        can_read = True
+                        return can_read
+        if self.children_count == 0:
+            can_read = False
+            return can_read
+        else:
+            for fold in self.get_children():
+                can_read = fold.is_group_read(group)
+                if can_read:
+                    return can_read
+        can_read = False
+        return can_read
+
+    def is_guess_read(self):
+        from .filemodels import File, FilePermission
+        if self.file_count != 0:
+            if self.all_files.filter(ispublic=True).count():
+                can_read = True
+                return can_read
+        elif self.children_count == 0:
+            can_read = False
+            return can_read
+        else:
+            for fold in self.get_children():
+                can_read = fold.is_guess_read()
+                if can_read:
+                    return can_read
+        can_read = False
+        return can_read
+
 
 
 

@@ -78,9 +78,12 @@ class FolderAdmin(PrimitivePermissionAwareModelAdmin):
     search_fields = ['name', ]
     raw_id_fields = ('owner',)
     save_as = True  # see ImageAdmin
-    actions = ['files_set_public', 'files_set_private',
+    actions = [
+        # 'files_set_public', 'files_set_private',
                'delete_files_or_folders', 'move_files_and_folders',
-               'copy_files_and_folders', 'resize_images', 'rename_files']
+               'copy_files_and_folders',
+                # 'resize_images',
+               'rename_files']
 
     directory_listing_template = 'admin/filer/folder/directory_listing.html'
     order_by_file_fields = ('_file_size', 'original_filename', 'name', 'owner',
@@ -429,7 +432,7 @@ class FolderAdmin(PrimitivePermissionAwareModelAdmin):
             'permissions': permissions,
             'permstest': userperms_for_request(folder, request),
             'current_url': request.path,
-            'title': 'Directory listing for %s' % folder.name,
+            'title': '知识库 %s' % folder.name,
             'search_string': ' '.join(search_terms),
             'q': urlquote(q),
             'show_result_count': show_result_count,
