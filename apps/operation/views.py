@@ -8,11 +8,12 @@ import sys
 import requests
 from django import forms
 from django.contrib.auth import authenticate, login
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
-from django.shortcuts import render, get_object_or_404
-from filer.models import Folder, FolderRoot, File, FilePermission
+from django.shortcuts import render, get_object_or_404,redirect
+from filer.models import Folder, FolderRoot
+from filer.models.filemodels import File, FilePermission
 from yunpian.SmsOperator import SmsOperator
 from django.template import Context , loader
 from .utils import DBHelper
@@ -243,9 +244,20 @@ def go_search(request):
 def search(request):
     if request.method == 'GET':
         search_text = request.GET.get('search_text')
+        groupname = request.session.get('user_group')
+        hasgroup = Group.objects.get(name=groupname)
         print search_text
-
-        return HttpResponseRedirect(reverse('index'))
+        print hasgroup.name
+        filelist = File.objects.filter(Q(name__icontains=search_text)&(Q(perm__groups=hasgroup)|Q(ispublic="True"))).distinct()
+        # filelist = File.objects.filter((Q(name=search_text)|Q(ispublic="True"))).distinct()
+        listoffiledir=list(filelist)
+        folderlist = {}
+        template = loader.get_template('wxWeb/index2.html')
+        context = Context({
+        'filepath': listoffiledir,
+        'foldlist': folderlist,
+        })
+        return HttpResponse(template.render(context))
 
 
 """

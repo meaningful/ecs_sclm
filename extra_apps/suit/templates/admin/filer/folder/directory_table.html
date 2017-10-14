@@ -128,9 +128,9 @@
                                     <div>{% trans "Permissions" %}: {% if file.is_public %}{% trans "disabled" %}{% else %}{% trans "enabled" %}{% endif %}</div>
                                 {% endif %}
                             </td>
-                            <td class="column-owner">
-                                {{ file.owner|default:"n/a" }}
-                            </td>
+                            <!-- <td class="column-owner"> -->
+                            <!-- {{ file.owner|default:"n/a" }} -->
+                            <!-- </td> -->
                             <td class="column-size">
                                 <span class="tiny"> ({{ file.size|filesize:"auto1000long" }}{% ifequal file.file_type "Image" %}, {{ file.width }}x{{ file.height }} px{% endifequal %})</span>
                             </td>

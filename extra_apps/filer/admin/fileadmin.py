@@ -58,14 +58,14 @@ class FileAdmin(PrimitivePermissionAwareModelAdmin):
             (None, {
                 'fields': (
                     'name',
-                    'owner',
+                    # 'owner',
                     'description',
                 ) + extra_main_fields,
             }),
             (_('Advanced'), {
                 'fields': (
                     'file',
-                    'sha1',
+                    # 'sha1',
                     'display_canonical',
                 ) + extra_advanced_fields,
                 'classes': ('collapse',),
@@ -180,6 +180,7 @@ class FileAdmin(PrimitivePermissionAwareModelAdmin):
     display_canonical.allow_tags = True
     display_canonical.short_description = _('canonical URL')
 
+    #############chenyu change
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if not request.user.is_superuser:  
             if db_field.name == "perm":
