@@ -410,7 +410,7 @@ class Folder(models.Model, mixins.IconsMixin):
         app_label = 'filer'
         verbose_name = _("Folder")
         # verbose_name_plural = _("Folders")
-        verbose_name_plural = (u'知识库')
+        verbose_name_plural = (u'传美知识库')
 
 # MPTT registration
 try:

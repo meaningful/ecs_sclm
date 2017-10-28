@@ -66,21 +66,24 @@ class FileAdmin(PrimitivePermissionAwareModelAdmin):
                 'fields': (
                     'file',
                     # 'sha1',
-                    'display_canonical',
+                    # 'display_canonical',
+                    'ispublic',
+                    'perm',
                 ) + extra_advanced_fields,
-                'classes': ('collapse',),
+                # 'classes': ('collapse',),
             }),
-        ) + extra_fieldsets
-        if settings.FILER_ENABLE_PERMISSIONS:
-            fieldsets = fieldsets + (
-                (None, {
-                    'fields': (
-                         # 'is_public',
-                           'ispublic',
-                           'perm',
-                           )
-                }),
+        # ) + extra_fieldsets
             )
+        # if settings.FILER_ENABLE_PERMISSIONS:
+        #     fieldsets = fieldsets + (
+        #         (None, {
+        #             'fields': (
+        #                  # 'is_public',
+        #                    'ispublic',
+        #                    'perm',
+        #                    )
+        #         }),
+        #     )
         return fieldsets
 
     def response_change(self, request, obj):
@@ -181,14 +184,14 @@ class FileAdmin(PrimitivePermissionAwareModelAdmin):
     display_canonical.short_description = _('canonical URL')
 
     #############chenyu change
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if not request.user.is_superuser:  
-            if db_field.name == "perm":
-                qs = FilePermission.objects.all()
-                group_ids = request.user.groups.all().values_list('id', flat=True)
-                q = Q(groups__in=group_ids) | Q(everybody=True)
-                kwargs['queryset'] = qs.filter(q).distinct()
-        return super(FileAdmin,self).formfield_for_foreignkey(db_field, request, **kwargs)        
+    # def formfield_for_foreignkey(self, db_field, request, **kwargs):
+    #     if not request.user.is_superuser:  
+    #         if db_field.name == "perm":
+    #             qs = FilePermission.objects.all()
+    #             group_ids = request.user.groups.all().values_list('id', flat=True)
+    #             q = Q(groups__in=group_ids) | Q(everybody=True)
+    #             kwargs['queryset'] = qs.filter(q).distinct()
+    #     return super(FileAdmin,self).formfield_for_foreignkey(db_field, request, **kwargs)        
 
 
 
@@ -208,21 +211,21 @@ class FilePermissionAdmin(admin.ModelAdmin):
     form = FilePermissionAdminChangeFrom
     # fields = ('name', 'can_read', 'can_edit', 'everybody', 'groups')
     fields = ('name', 'groups')
-
-    def get_queryset(self, request):
-        qs = super(FilePermissionAdmin, self).get_queryset(request)
-        if request.user.is_superuser:
-            return qs
-        else:
-            group_ids = request.user.groups.all().values_list('id', flat=True)
-            q = Q(groups__in=group_ids) | Q(everybody=True)
-            return qs.filter(q).distinct()
-    def formfield_for_manytomany(self, db_field, request, **kwargs):
-        if not request.user.is_superuser:  
-            if db_field.name == "groups":
-                group_ids = request.user.groups.all().values_list('name', flat=True)
-                kwargs["queryset"] = group_ids
-        return super(FilePermissionAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
+    #  chenyu change
+    # def get_queryset(self, request):
+    #     qs = super(FilePermissionAdmin, self).get_queryset(request)
+    #     if request.user.is_superuser:
+    #         return qs
+    #     else:
+    #         group_ids = request.user.groups.all().values_list('id', flat=True)
+    #         q = Q(groups__in=group_ids) | Q(everybody=True)
+    #         return qs.filter(q).distinct()
+    # def formfield_for_manytomany(self, db_field, request, **kwargs):
+    #     if not request.user.is_superuser:  
+    #         if db_field.name == "groups":
+    #             group_ids = request.user.groups.all().values_list('name', flat=True)
+    #             kwargs["queryset"] = group_ids
+    #     return super(FilePermissionAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
 
     
 FileAdmin.fieldsets = FileAdmin.build_fieldsets()

@@ -51,7 +51,7 @@
 {% block sidebar %}
   <div id="content-related">
     <div class="module" id="recent-actions-module">
-      <h4 class="italic-title">{% trans 'My Actions' %}</h4>
+      <h4 class="italic-title">{% trans '我的最近操作：' %}</h4>
 
       {% load log %}
       {% get_admin_log 10 as admin_log for_user user %}
@@ -65,15 +65,15 @@
               <i class="{% if entry.is_addition %}icon-plus{% endif %}{% if entry.is_change %}icon-pencil{% endif %}{% if entry.is_deletion %}icon-trash{% endif %} icon-alpha5"></i>
 
               {% spaceless %}
-                {% if entry.is_addition %}{% trans 'added'|capfirst %}{% endif %}
-                {% if entry.is_change %}{% trans 'changed'|capfirst %}{% endif %}
-                {% if entry.is_deletion %}{% trans 'deleted'|capfirst %}{% endif %}
+                {% if entry.is_addition %}{% trans '新增'|capfirst %}{% endif %}
+                {% if entry.is_change %}{% trans '修改'|capfirst %}{% endif %}
+                {% if entry.is_deletion %}{% trans '删除'|capfirst %}{% endif %}
 
                 {% if entry.content_type %}
                   <span class="mini quiet">{% filter capfirst %}
                     {% trans entry.content_type.name %}{% endfilter %}</span>
                 {% else %}
-                  <span class="mini quiet">{% trans 'Unknown content' %}</span>
+                  <span class="mini quiet">{% trans '未知项目' %}</span>
                 {% endif %}
               {% endspaceless %}&nbsp;
 

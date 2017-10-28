@@ -1,7 +1,8 @@
 .titlePanelDiv {
 	height: 10%;
 	text-align: center;
-	background: #e0ede3;
+#	background: #e0ede3;
+	background:#004E2B;
 	vertical-align: middle;
 }
 

@@ -59,7 +59,7 @@ from .tools import (
     popup_status,
     userperms_for_request,
 )
-
+from django.contrib.auth.models import Group, Permission, User
 
 class AddFolderPopupForm(forms.ModelForm):
     folder = forms.HiddenInput()
@@ -67,6 +67,10 @@ class AddFolderPopupForm(forms.ModelForm):
     class Meta(object):
         model = Folder
         fields = ('name',)
+
+# class FolderForm(forms.ModelForm):
+    # owner = forms.ModelMultipleChoiceField(widget=forms.CheckboxSelectMultiple,queryset=User.objects.all())
+    # owner = forms.ChoiceField(widget=forms.CheckboxInput)
 
 
 class FolderAdmin(PrimitivePermissionAwareModelAdmin):
@@ -76,7 +80,7 @@ class FolderAdmin(PrimitivePermissionAwareModelAdmin):
     list_per_page = 20
     list_filter = ('owner',)
     search_fields = ['name', ]
-    raw_id_fields = ('owner',)
+    # raw_id_fields = ('owner',)
     save_as = True  # see ImageAdmin
     actions = [
         # 'files_set_public', 'files_set_private',
@@ -85,6 +89,7 @@ class FolderAdmin(PrimitivePermissionAwareModelAdmin):
                 # 'resize_images',
                'rename_files']
 
+    # form = FolderForm
     directory_listing_template = 'admin/filer/folder/directory_listing.html'
     order_by_file_fields = ('_file_size', 'original_filename', 'name', 'owner',
                             'uploaded_at', 'modified_at')
@@ -338,15 +343,26 @@ class FolderAdmin(PrimitivePermissionAwareModelAdmin):
         else:
             virtual_items = []
 
-        perms = FolderPermission.objects.get_read_id_list(request.user)
+        # perms = FolderPermission.objects.get_read_id_list(request.user)
+        # root_exclude_kw = {'parent__isnull': False, 'parent__id__in': perms}
+        # if perms != 'All':
+        #     file_qs = file_qs.filter(models.Q(folder__id__in=perms) | models.Q(owner=request.user))
+        #     folder_qs = folder_qs.filter(models.Q(id__in=perms) | models.Q(owner=request.user))
+        # else:
+        #     root_exclude_kw.pop('parent__id__in')
+        # if folder.is_root:
+        #     folder_qs = folder_qs.exclude(**root_exclude_kw)
+
+        ########## chenyu change#######################
+        perms = folder.children.all()
         root_exclude_kw = {'parent__isnull': False, 'parent__id__in': perms}
-        if perms != 'All':
-            file_qs = file_qs.filter(models.Q(folder__id__in=perms) | models.Q(owner=request.user))
-            folder_qs = folder_qs.filter(models.Q(id__in=perms) | models.Q(owner=request.user))
+        if not request.user.is_superuser:
+            folder_qs = folder_qs.filter(models.Q(id__in=perms) & models.Q(owner=request.user))
         else:
             root_exclude_kw.pop('parent__id__in')
         if folder.is_root:
             folder_qs = folder_qs.exclude(**root_exclude_kw)
+
 
         folder_children += folder_qs
         folder_files += file_qs

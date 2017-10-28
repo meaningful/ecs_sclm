@@ -145,7 +145,7 @@ class File(PolymorphicModel, mixins.IconsMixin):
         help_text=(u'所有用户可见'))
 
     objects = FileManager()
-    perm = models.ForeignKey('FilePermission', verbose_name=(u'权限'),null=True, blank=True)
+    perm = models.ForeignKey('FilePermission', verbose_name=(u'角色'),null=True, blank=True)
 
     @classmethod
     def matches_file_type(cls, iname, ifile, request):
@@ -260,6 +260,8 @@ class File(PolymorphicModel, mixins.IconsMixin):
         if self._old_is_public != self.is_public and self.pk:
             self._move_file()
             self._old_is_public = self.is_public
+        if not self.name:
+            self.name = os.path.splitext(self.original_filename)[0]
         super(File, self).save(*args, **kwargs)
     save.alters_data = True
 

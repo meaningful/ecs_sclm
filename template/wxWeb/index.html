@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
-    <title>素材库</title>
+    <title>传美知识库</title>
     <link rel="stylesheet" href="http://res.wx.qq.com/open/libs/weui/0.4.0/weui.min.css">
     <link rel="stylesheet" href="/static/css/base.css">
     <link rel="stylesheet" href="/static/css/index.css">
@@ -22,8 +22,8 @@
 
     <div class="titlePanelDiv">
     	<div class="titleTextDiv">
-    	    <div class="titleText" style="padding-left:12px;">素材库
-	         <img src="{% static "operation/img/ic_search.png" %}" style=" padding-top:8px;"  width="24" height="24" align="right"  onclick="go_search()"/> </span>
+    	    <div class="titleText" style="padding-left:32px;">传美知识库
+	         <img src="{% static "operation/img/ic_search.png" %}" style=" margin-top:8px;margin-right:12px;"  width="24" height="24" align="right"  onclick="go_search()"/> </span>
 	   </div>
 	</div>
    </div>
@@ -37,7 +37,7 @@
             var rowDiv ;
             var count = 0 ; 
          {% for folder in foldlist %}
-                if (count%2 == 0) {
+                if (count%3 == 0) {
                     rowDiv = document.createElement("div");
                     rowDiv.setAttribute("class", "rowDiv");
                 }
@@ -59,15 +59,23 @@
 				            gridImg.setAttribute("src", "/media/img/ic_folder.png");
 		               	{% endif %}
 
+		    
+		    var line = document.createElement('HR');
+		    line.setAttribute("style","margin-left:20%;");
+		    line.setAttribute("color","#dddddd");
+		    line.setAttribute("width","60%");
+		    line.setAttribute("SIZE","0.5px");
 
-                    var gridText = document.createElement("input");
+
+		    var gridText = document.createElement("input");
                     gridText.setAttribute("class", "gridText");
                     gridText.setAttribute("value", "{{folder.name}}".substring(0,6));
                     gridText.setAttribute("type", "text");
                     gridText.setAttribute("disabled", "true");
 
                     gridItem.appendChild(gridImg);
-                    gridItem.appendChild(gridText);
+		    gridItem.appendChild(line);
+		    gridItem.appendChild(gridText);
                     link.appendChild(gridItem);
 
                     rowDiv.appendChild(link);
@@ -79,7 +87,7 @@
 //            count = 0 ;
             {% for file in filepath %}
                 
-                if (count%2 == 0) {
+                if (count%3 == 0) {
                     rowDiv = document.createElement("div");
                     rowDiv.setAttribute("class", "rowDiv");
                 }
@@ -122,6 +130,12 @@
 				          gridImg.setAttribute("src", "/media/img/unknown.png");
                 {% endif %}
  		//gridImg.setAttribute("src", "{{picName.url}}");
+                var line = document.createElement('HR');
+                line.setAttribute("style","margin-left:20%;");
+                line.setAttribute("color","#dddddd");
+		line.setAttribute("width","60%");
+                line.setAttribute("SIZE","0.5px");
+
                 var gridText = document.createElement("input");
                 gridText.setAttribute("class", "gridText");
                 gridText.setAttribute("value", "{{file.name}}".substring(0,6));
@@ -129,8 +143,10 @@
                 gridText.setAttribute("disabled", "true");
 
                 gridItem.appendChild(gridImg);
-                gridItem.appendChild(gridText);
-                link.appendChild(gridItem);
+		gridItem.appendChild(line);
+		gridItem.appendChild(gridText);
+
+		link.appendChild(gridItem);
 
                 rowDiv.appendChild(link);
            

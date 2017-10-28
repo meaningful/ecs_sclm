@@ -49,12 +49,13 @@
 
       <div class="alert alert-block alert-error">
         <h4 class="alert-heading">删除确认</h4>
-
-        <p>
-          {% blocktrans %}Are you sure you want to delete the selected {{ objects_name }}? All of the following objects and their related items will be deleted:{% endblocktrans %}</p>
+	<br>
+	<p> 您确定要删除所选中的{{ objects_name }}吗？若删除该{{ objects_name }}，则与之相关的所有项目都将被删除！</p>
+       <!--  <p>
+	{% blocktrans %}Are you sure you want to delete the selected {{ objects_name }}? All of the following objects and their related items will be deleted:{% endblocktrans %}</p>
         {% for deletable_object in deletable_objects %}
-          <ul>{{ deletable_object|unordered_list }}</ul>
-        {% endfor %}
+         <ul>{{ deletable_object|unordered_list }}</ul>
+        {% endfor %} -->
         <br>
 
         <div>

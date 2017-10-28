@@ -26,7 +26,7 @@ msgstr "高级"
 
 #: admin/fileadmin.py:165
 msgid "canonical URL"
-msgstr "权威URL"
+msgstr "下载地址"
 
 #: admin/folderadmin.py:386 admin/folderadmin.py:553
 msgid ""
@@ -833,7 +833,7 @@ msgstr "激活"
 #, python-format
 #| msgid "Change '%(item_label)s' details"
 msgid "Canonical url '%(item_label)s'"
-msgstr "权威URL %(item_label)s"
+msgstr "下载URL %(item_label)s"
 
 #: templates/admin/filer/folder/directory_table.html:141
 #, python-format

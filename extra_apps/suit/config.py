@@ -10,7 +10,7 @@ def default_config():
         'VERSION': VERSION,
 
         # configurable
-        'ADMIN_NAME': '三草两木',
+        'ADMIN_NAME': '传美知识库',
         'HEADER_DATE_FORMAT': 'l, jS F Y',
         'HEADER_TIME_FORMAT': 'H:i',
 

@@ -15,7 +15,7 @@ a {
 	border: 1px solid #ddd;
         border-top: none;
         border-left:none;
-	width: 49%;
+	width: 33%;
 	text-align: center;
 }
 
@@ -36,7 +36,8 @@ a {
 
 .gridText {
 	width: 100%;
-	padding-top: 10px;
+	padding-top: 5px;
+	padding-bottom:1px;
 	text-align: center;
 	display: block;
 	border: none;
