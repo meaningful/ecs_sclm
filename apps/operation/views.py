@@ -211,10 +211,9 @@ def phone_bind(request):
 	    if not open_id or not agent_wx or not session_agent_wx or not verify_code or not session_msg_verify_code:
                 return render(request,'operation/phone_bind_error.html',{})
             # 以session 中的验证码和微信号一致为绑定成功的判断条件
-           # if agent_wx == session_agent_wx and verify_code == session_msg_verify_code:
-	    if agent_wx == session_agent_wx:
-             #   DBHelper.insert(
-             #       DBHelper.sql_tab_zsk_userinfo_insert.format("\'" + open_id + "\'", "\'" + agent_wx + "\'"))
+            if agent_wx == session_agent_wx and verify_code == session_msg_verify_code:
+                DBHelper.insert(
+                    DBHelper.sql_tab_zsk_userinfo_insert.format("\'" + open_id + "\'", "\'" + agent_wx + "\'"))
                 user_info = get_user_info(agent_wx, customerclass)
                 group = format_group(str(customerclass) + str(user_info[1]))
                 # request.session['user_group'] = u'微信三草两木三级代理'
