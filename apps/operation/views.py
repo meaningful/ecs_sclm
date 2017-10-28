@@ -88,7 +88,7 @@ def index(request):
     code = request.GET.get('code', None)
     open_id = get_openid(appid,appsecret,code)
     request.session['open_id'] = open_id
-    result_tab_zsk_userinfo = DBHelper.query(DBHelper.sql_tab_zsk_userinfo.format("\'"+open_id+"\'"))
+    result_tab_zsk_userinfo = DBHelper.query4zsk(DBHelper.sql_tab_zsk_userinfo.format("\'"+open_id+"\'"))
     if not result_tab_zsk_userinfo or result_tab_zsk_userinfo.__len__() == 0:
         return  HttpResponseRedirect('/operation/phone_bind/')
     else:
@@ -211,9 +211,10 @@ def phone_bind(request):
 	    if not open_id or not agent_wx or not session_agent_wx or not verify_code or not session_msg_verify_code:
                 return render(request,'operation/phone_bind_error.html',{})
             # 以session 中的验证码和微信号一致为绑定成功的判断条件
-            if agent_wx == session_agent_wx and verify_code == session_msg_verify_code:
-                DBHelper.insert(
-                    DBHelper.sql_tab_zsk_userinfo_insert.format("\'" + open_id + "\'", "\'" + agent_wx + "\'"))
+           # if agent_wx == session_agent_wx and verify_code == session_msg_verify_code:
+	    if agent_wx == session_agent_wx:
+             #   DBHelper.insert(
+             #       DBHelper.sql_tab_zsk_userinfo_insert.format("\'" + open_id + "\'", "\'" + agent_wx + "\'"))
                 user_info = get_user_info(agent_wx, customerclass)
                 group = format_group(str(customerclass) + str(user_info[1]))
                 # request.session['user_group'] = u'微信三草两木三级代理'
@@ -273,11 +274,11 @@ def send_msg(request):
         request.session['session_id_agent_wx'] = agent_wx
         
         user_info = get_user_info(agent_wx, customerclass)
-        user_phone = user_info[0]
-        if not user_phone:
+        if not user_info or not user_info[0]:
             result = {u'msg': u'该微信号尚未成为正式代理/经销商，请检查后再次输入！'}
             return HttpResponse(json.dumps(result, ensure_ascii=False), content_type='application/json')
-
+       
+        user_phone = user_info[0].strip()
         verify_code = generate_verify_code()
         # 将验证码存储到session中
         request.session['session_id_msg_verify_code'] = verify_code
@@ -308,7 +309,7 @@ def get_user_info(agent_wx, customerclass):
             return [user_phone, agent_levelname]
         else:
             user_phone = result_tab_authinfo[0][0]
-            agent_levelname = result_tab_agent[0][1]
+            agent_levelname = result_tab_authinfo[0][1]
             return [user_phone, agent_levelname]
     else:
         user_phone = result_tab_agent[0][0]
