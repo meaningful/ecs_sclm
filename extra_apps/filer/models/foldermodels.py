@@ -244,7 +244,8 @@ class Folder(models.Model, mixins.IconsMixin):
                 return files
             else:
                 return files
-
+        else:
+            return files
 
     def get_childfolder_read(self, **kw):
         # from .filemodels import File, FilePermission

@@ -20,7 +20,7 @@ sys.path.insert(0, os.path.join(BASE_DIR, 'apps'))
 sys.path.insert(0, os.path.join(BASE_DIR, 'extra_apps'))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
-
+DEFAULT_CHARSET= 'utf-8'
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'c@r!33k6o_jcclh0!$)y$%g3$2=%dcpl+-qk@k^5yp$f391ja#'
 

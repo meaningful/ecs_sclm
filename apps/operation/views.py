@@ -97,7 +97,7 @@ def index(request):
         if agent_levename:
             group = format_group(str(customerclass)+str(agent_levename))
             request.session['user_group'] = group
-    return  HttpResponseRedirect(reverse('directory_listing',args=(1,)))
+    return  HttpResponseRedirect(reverse('directory_listing',args=(2,)))
             
     
 def get_openid(appid,appsecret,code):
@@ -221,7 +221,7 @@ def phone_bind(request):
                 # return requests.post(settings.ALLOWED[0]+reverse('directory_listing',args=(1,)), data=json.dumps({'group': group}))
                 # return HttpResponseRedirec
                 # t('/operation/1/?group='+group)
-                return  HttpResponseRedirect(reverse('directory_listing',args=(1,)))
+                return  HttpResponseRedirect(reverse('directory_listing',args=(2,)))
                 # return HttpResponseRedirect('/operation/1/')
             else:
                 return HttpResponseRedirect('/operation/phone_bind/')
@@ -245,20 +245,21 @@ def search(request):
     if request.method == 'GET':
         search_text = request.GET.get('search_text')
         groupname = request.session.get('user_group')
-        hasgroup = Group.objects.get(name=groupname)
-        print search_text
-        print hasgroup.name
-        filelist = File.objects.filter(Q(name__icontains=search_text)&(Q(perm__groups=hasgroup)|Q(ispublic="True"))).distinct()
-        # filelist = File.objects.filter((Q(name=search_text)|Q(ispublic="True"))).distinct()
+        if groupname != None:
+            hasgroup = Group.objects.get(name=groupname)
+            filelist = File.objects.filter(Q(name__icontains=search_text)&(Q(perm__groups=hasgroup)|Q(ispublic="True"))).distinct()
+            # filelist = File.objects.filter((Q(name=search_text)|Q(ispublic="True"))).distinct()
+        else:
+            filelist = File.objects.filter(Q(name__icontains=search_text)&(Q(ispublic="True"))).distinct()
         listoffiledir=list(filelist)
         folderlist = {}
-        template = loader.get_template('wxWeb/index2.html')
+        template = loader.get_template('wxWeb/index.html')
         context = Context({
         'filepath': listoffiledir,
         'foldlist': folderlist,
         })
         return HttpResponse(template.render(context))
-
+       
 
 """
 短信验证码

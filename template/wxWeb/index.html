@@ -1,7 +1,8 @@
 {% load i18n admin_static %}
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
+    <!-- <meta charset="UTF-8"> -->
+    <meta charset="gbk">
     <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
     <title>传美知识库</title>
     <link rel="stylesheet" href="http://res.wx.qq.com/open/libs/weui/0.4.0/weui.min.css">
@@ -126,6 +127,22 @@
             
                 {% elif file.extension == "xlsx" %}
 				          gridImg.setAttribute("src", "/media/img/xls.png");
+
+                {% elif file.extension == "zip" %}
+				          gridImg.setAttribute("src", "/media/img/rar.png");
+
+                {% elif file.extension == "7z" %}
+				          gridImg.setAttribute("src", "/media/img/rar.png");
+
+                {% elif file.extension == "rar" %}
+				          gridImg.setAttribute("src", "/media/img/rar.png");
+
+                {% elif file.extension == "psd" %}
+				          gridImg.setAttribute("src", "/media/img/psd.png");
+
+                {% elif file.extension == "txt" %}
+				          gridImg.setAttribute("src", "/media/img/txt.png");
+
             {% else %}
 				          gridImg.setAttribute("src", "/media/img/unknown.png");
                 {% endif %}

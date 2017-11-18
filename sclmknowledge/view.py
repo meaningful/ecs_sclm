@@ -11,9 +11,9 @@ def hello(request):
     return HttpResponse("Hello world !  now , the time is :"+ time.strftime('%Y-%m-%d %H-%M-%S'))
 
 def index(request):
-    fileindexfolder = get_object_or_404(Folder, name="ab")
+    fileindexfolder = get_object_or_404(Folder, name="三草两木")
     # listoffiledir = [singlefile.file for singlefile in fileindexfolder.files ]
-    hasuser = 'sclmmanager'
+#    hasuser = 'sclmmanager'
     listoffiledir = list(fileindexfolder.get_childfile_read())
     can_read_folder = list(fileindexfolder.get_childfolder_read())
 #    can_read_folder = fileindexfolder.get_children()
