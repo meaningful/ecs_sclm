@@ -19,7 +19,7 @@ output += 'sys.version = %s\n' % repr(sys.version)
 output += 'sys.prefix = %s\n' % repr(sys.prefix)
 
 print output
-sys.path = ['/root/WorkSpace/sclmknowledge/extra_apps', '/root/WorkSpace/sclmknowledge/apps', '/root/WorkSpace/sclmknowledge', '/usr/local/lib/python2.7/dist-packages/AliyunUtil-0.0.1-py2.7.egg', '/usr/local/lib/python2.7/dist-packages/cloud_init-0.7.6-py2.7.egg', '/usr/lib/python2.7', '/usr/lib/python2.7/plat-x86_64-linux-gnu', '/usr/lib/python2.7/lib-tk', '/usr/lib/python2.7/lib-old', '/usr/lib/python2.7/lib-dynload', '/usr/local/lib/python2.7/dist-packages', '/usr/lib/python2.7/dist-packages', '/usr/lib/python2.7/site-packages', '/usr/lib64/python2.7/site-packages']
+sys.path = ['/home/media','/root/WorkSpace/sclmknowledge/extra_apps', '/root/WorkSpace/sclmknowledge/apps', '/root/WorkSpace/sclmknowledge', '/usr/local/lib/python2.7/dist-packages/AliyunUtil-0.0.1-py2.7.egg', '/usr/local/lib/python2.7/dist-packages/cloud_init-0.7.6-py2.7.egg', '/usr/lib/python2.7', '/usr/lib/python2.7/plat-x86_64-linux-gnu', '/usr/lib/python2.7/lib-tk', '/usr/lib/python2.7/lib-old', '/usr/lib/python2.7/lib-dynload', '/usr/local/lib/python2.7/dist-packages', '/usr/lib/python2.7/dist-packages', '/usr/lib/python2.7/site-packages', '/usr/lib64/python2.7/site-packages']
 
 
 

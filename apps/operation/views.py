@@ -32,13 +32,17 @@ from django.urls import reverse
 from django.db.models import Q
 reload(sys)
 sys.setdefaultencoding('utf-8')
+#短信APIKEY
 #APIKEY = '7d30dd097278b7a073e99d548aa54c1d'
 APIKEY = '6dfa92857a0c6c6c963b42e0f09e1565'
-global appid
-global appsecret
+# global appid
+# global appsecret
 
 appid = "wx8ca0d078587b5a8e"
 appsecret = "c9eb23fa299124647ed3298030e6215e"
+
+appidzm = "wxec9a833330f06382"
+appsecretzm = "25c47315e28d12141fca6b66f54a60b0"
 
 class WeChat(View):
   #这里我当时写成了防止跨站请求伪造，其实不是这样的，恰恰相反。因为django默认是开启了csrf防护中间件的
@@ -80,15 +84,13 @@ class WeChatBindFrom(forms.Form):
     verify_code = forms.CharField(label=u'验证码', max_length=6,)
 
 
-# open_id = u'open_id123'
-customerclass = u'微信三草两木'
-
-
 def index(request):
+    customerclass = u'微信三草两木'
     code = request.GET.get('code', None)
     open_id = get_openid(appid,appsecret,code)
     request.session['open_id'] = open_id
-    result_tab_zsk_userinfo = DBHelper.query4zsk(DBHelper.sql_tab_zsk_userinfo.format("\'"+open_id+"\'"))
+    request.session['customerclass'] = customerclass
+    result_tab_zsk_userinfo = DBHelper.query4zsk(DBHelper.sql_query_zsk_userinfo_tab.format(DBHelper.ZSK_TAB_USERINFO_SCLM, "\'"+open_id+"\'"))
     if not result_tab_zsk_userinfo or result_tab_zsk_userinfo.__len__() == 0:
         return  HttpResponseRedirect('/operation/phone_bind/')
     else:
@@ -98,14 +100,79 @@ def index(request):
             group = format_group(str(customerclass)+str(agent_levename))
             request.session['user_group'] = group
     return  HttpResponseRedirect(reverse('directory_listing',args=(2,)))
-            
+
+def indexgbox(request):
+    customerclass = u'微信Gbox'
+    code = request.GET.get('code', None)
+    open_id = get_openid(appid,appsecret,code)
+    request.session['open_id'] = open_id
+    request.session['customerclass'] = customerclass
+    result_tab_zsk_userinfo = DBHelper.query4zsk(DBHelper.sql_query_zsk_userinfo_tab.format(DBHelper.ZSK_TAB_USERINFO_GBOX, "\'"+open_id+"\'"))
+    if not result_tab_zsk_userinfo or result_tab_zsk_userinfo.__len__() == 0:
+        return  HttpResponseRedirect('/operation/phone_bind/')
+    else:
+        user_info = get_user_info(str(result_tab_zsk_userinfo[0][0]), customerclass)
+        agent_levename = user_info[1]
+        if agent_levename:
+            group = format_group(str(customerclass)+str(agent_levename))
+            request.session['user_group'] = group
+    return  HttpResponseRedirect(reverse('directory_listing',args=(2,)))
+  
+def indexqy(request):
+    customerclass = u'微信清奕'
+    code = request.GET.get('code', None)
+    open_id = get_openid(appid,appsecret,code)
+    request.session['open_id'] = open_id
+    request.session['customerclass'] = customerclass
+    result_tab_zsk_userinfo = DBHelper.query4zsk(DBHelper.sql_query_zsk_userinfo_tab.format(DBHelper.ZSK_TAB_USERINFO_QY, "\'"+open_id+"\'"))
+    if not result_tab_zsk_userinfo or result_tab_zsk_userinfo.__len__() == 0:
+        return  HttpResponseRedirect('/operation/phone_bind/')
+    else:
+        user_info = get_user_info(str(result_tab_zsk_userinfo[0][0]), customerclass)
+        agent_levename = user_info[1]
+        if agent_levename:
+            group = format_group(str(customerclass)+str(agent_levename))
+            request.session['user_group'] = group
+    return  HttpResponseRedirect(reverse('directory_listing',args=(2,)))
+  
+def indexymm(request):
+    customerclass = u'微信养面膜'
+    code = request.GET.get('code', None)
+    open_id = get_openid(appid,appsecret,code)
+    request.session['open_id'] = open_id
+    request.session['customerclass'] = customerclass
+    result_tab_zsk_userinfo = DBHelper.query4zsk(DBHelper.sql_query_zsk_userinfo_tab.format(DBHelper.ZSK_TAB_USERINFO_YMM, "\'"+open_id+"\'"))
+    if not result_tab_zsk_userinfo or result_tab_zsk_userinfo.__len__() == 0:
+        return  HttpResponseRedirect('/operation/phone_bind/')
+    else:
+        user_info = get_user_info(str(result_tab_zsk_userinfo[0][0]), customerclass)
+        agent_levename = user_info[1]
+        if agent_levename:
+            group = format_group(str(customerclass)+str(agent_levename))
+            request.session['user_group'] = group
+    return  HttpResponseRedirect(reverse('directory_listing',args=(2,)))
+  
+def indexzm(request):
+    customerclass = u'微信珍慕'
+    code = request.GET.get('code', None)
+    open_id = get_openid(appidzm,appsecretzm,code)
+    request.session['open_id'] = open_id
+    request.session['customerclass'] = customerclass
+    result_tab_zsk_userinfo = DBHelper.query4zsk(DBHelper.sql_query_zsk_userinfo_tab.format(DBHelper.ZSK_TAB_USERINFO_ZM, "\'"+open_id+"\'"))
+    if not result_tab_zsk_userinfo or result_tab_zsk_userinfo.__len__() == 0:
+        return  HttpResponseRedirect('/operation/phone_bind/')
+    else:
+        user_info = get_user_info(str(result_tab_zsk_userinfo[0][0]), customerclass)
+        agent_levename = user_info[1]
+        if agent_levename:
+            group = format_group(str(customerclass)+str(agent_levename))
+            request.session['user_group'] = group
+    return  HttpResponseRedirect(reverse('directory_listing',args=(5,)))
     
 def get_openid(appid,appsecret,code):
-    # print("*************************test******************************")
     response = urllib2.urlopen('https://api.weixin.qq.com/sns/oauth2/access_token?appid=%s&secret=%s&code=%s&grant_type=authorization_code&connect_redirect=1'%(appid,appsecret,code))
     content = response.read()
     s=json.loads(content)
-    # return HttpResponse("Hello, %s"%s["openid"])
     return s["openid"]
 
 def user_login(request):
@@ -200,6 +267,7 @@ def directory_listing(request, folder_id=None):
 def phone_bind(request):
     if request.method == 'POST':
         open_id = request.session.get('open_id')
+        customerclass = request.session.get('customerclass')
         uform = WeChatBindFrom(request.POST)
         if uform.is_valid():
             # 从表单中获获取agent_wx 和 验证码
@@ -208,21 +276,24 @@ def phone_bind(request):
             # 获取session中的agent_wx 和 验证码
             session_agent_wx = request.session.get('session_id_agent_wx')
             session_msg_verify_code = request.session.get('session_id_msg_verify_code')
-	    if not open_id or not agent_wx or not session_agent_wx or not verify_code or not session_msg_verify_code:
+            if not open_id or not agent_wx or not session_agent_wx or not verify_code or not session_msg_verify_code:
                 return render(request,'operation/phone_bind_error.html',{})
             # 以session 中的验证码和微信号一致为绑定成功的判断条件
             if agent_wx == session_agent_wx and verify_code == session_msg_verify_code:
-                DBHelper.insert(
-                    DBHelper.sql_tab_zsk_userinfo_insert.format("\'" + open_id + "\'", "\'" + agent_wx + "\'"))
+                set_user_info(open_id ,agent_wx,customerclass)
                 user_info = get_user_info(agent_wx, customerclass)
                 group = format_group(str(customerclass) + str(user_info[1]))
-                # request.session['user_group'] = u'微信三草两木三级代理'
                 request.session['user_group'] = group
-                # return requests.post(settings.ALLOWED[0]+reverse('directory_listing',args=(1,)), data=json.dumps({'group': group}))
-                # return HttpResponseRedirec
-                # t('/operation/1/?group='+group)
-                return  HttpResponseRedirect(reverse('directory_listing',args=(2,)))
-                # return HttpResponseRedirect('/operation/1/')
+                if customerclass == u'微信三草两木':
+                    return  HttpResponseRedirect(reverse('directory_listing',args=(2,)))
+                elif customerclass == u'微信清奕':
+                    return  HttpResponseRedirect(reverse('directory_listing',args=(3,)))
+                elif customerclass == u'微信养面膜':
+                    return  HttpResponseRedirect(reverse('directory_listing',args=(4,)))
+                elif customerclass == u'微信珍慕':
+                    return  HttpResponseRedirect(reverse('directory_listing',args=(5,)))
+                elif customerclass == u'微信Gbox':
+                    return  HttpResponseRedirect(reverse('directory_listing',args=(6,)))
             else:
                 return HttpResponseRedirect('/operation/phone_bind/')
     else:
@@ -253,7 +324,7 @@ def search(request):
             filelist = File.objects.filter(Q(name__icontains=search_text)&(Q(ispublic="True"))).distinct()
         listoffiledir=list(filelist)
         folderlist = {}
-        template = loader.get_template('wxWeb/index.html')
+        template = loader.get_template('wxWeb/index2.html')
         context = Context({
         'filepath': listoffiledir,
         'foldlist': folderlist,
@@ -272,7 +343,7 @@ def send_msg(request):
     if request.method == 'GET':
         agent_wx = request.GET.get('agent_wx')
         request.session['session_id_agent_wx'] = agent_wx
-        
+        customerclass = request.session.get('customerclass')
         user_info = get_user_info(agent_wx, customerclass)
         if not user_info or not user_info[0]:
             result = {u'msg': u'该微信号尚未成为正式代理/经销商，请检查后再次输入！'}
@@ -317,6 +388,22 @@ def get_user_info(agent_wx, customerclass):
        
     return [user_phone, agent_levelname]
 
+# 存储用户信息
+def set_user_info(open_id,agent_wx, customerclass):
+    tab_name = None
+    if customerclass == u'微信三草两木':
+        tab_name = DBHelper.ZSK_TAB_USERINFO_SCLM
+    elif customerclass == u'微信清奕':
+        tab_name = DBHelper.ZSK_TAB_USERINFO_QY
+    elif customerclass == u'微信养面膜':
+        tab_name = DBHelper.ZSK_TAB_USERINFO_YMM
+    elif customerclass == u'微信珍慕':
+        tab_name = DBHelper.ZSK_TAB_USERINFO_ZM
+    elif customerclass == u'微信Gbox':
+        tab_name = DBHelper.ZSK_TAB_USERINFO_GBOX
+    if tab_name:
+        DBHelper.insert(
+            DBHelper.sql_insert_zsk_userinfo_tab.format(tab_name, "\'" + open_id + "\'", "\'" + agent_wx + "\'"))
 
 # 随机生成6位数字的验证码
 def generate_verify_code():
