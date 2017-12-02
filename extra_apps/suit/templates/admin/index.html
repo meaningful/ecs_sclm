@@ -15,6 +15,7 @@
   <div id="content-main">
     {% if app_list %}
       {% for app in app_list %}
+      {% if app.app_url != "/admin/auth/" %}
         <div class="module">
           <table class="table-overview applist" summary="{% blocktrans with name=app.name %}Models available in the {{ name }} application.{% endblocktrans %}">
             <caption><a href="{{ app.app_url }}" class="section">{% trans app.name %}</a></caption>
@@ -40,6 +41,7 @@
             {% endfor %}
           </table>
         </div>
+        {% endif %}
       {% endfor %}
     {% else %}
       <p>{% trans "You don't have permission to edit anything." %}</p>

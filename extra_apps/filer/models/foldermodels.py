@@ -108,9 +108,13 @@ class Folder(models.Model, mixins.IconsMixin):
     name = models.CharField(_('name'), max_length=255, unique=True)
     # name = models.CharField((u'文件名'), max_length=255)
 
-    owner = models.ForeignKey(getattr(settings, 'AUTH_USER_MODEL', 'auth.User'), verbose_name=_('owner'),
-                              related_name='filer_owned_folders', on_delete=models.SET_NULL,
+    # owner = models.ForeignKey(getattr(settings, 'AUTH_USER_MODEL', 'auth.User'), verbose_name=_('owner'),
+    #                           related_name='filer_owned_folders', on_delete=models.SET_NULL,
+    #                           null=True, blank=True)
+    owner = models.ManyToManyField(getattr(settings, 'AUTH_USER_MODEL', 'auth.User'), verbose_name=_('owner'),
+                              related_name='filer_owned_folders',
                               null=True, blank=True)
+
 
 
     uploaded_at = models.DateTimeField(_('uploaded at'), auto_now_add=True)
@@ -185,7 +189,7 @@ class Folder(models.Model, mixins.IconsMixin):
             return False
         elif user.is_superuser:
             return True
-        elif user == self.owner:
+        elif user in self.owner.all():
             return True
         else:
             if not hasattr(self, "permission_cache") or\

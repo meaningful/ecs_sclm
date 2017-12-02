@@ -15,6 +15,7 @@ from .tools import AdminContext, admin_url_params_encoded, popup_status
 
 from django.forms import CheckboxSelectMultiple
 from django.db.models import Q
+from django.contrib.auth.models import Group, Permission, User
 # class FilerPermissionInline(admin.TabularInline):
 #     model = FilePermission
 
@@ -196,13 +197,13 @@ class FileAdmin(PrimitivePermissionAwareModelAdmin):
 
 
 class FilePermissionAdminChangeFrom(forms.ModelForm):
-    
-    class Meta(object):
-        model = FilePermission
-        exclude = ()
-        widgets = {
-            'groups': CheckboxSelectMultiple
-        }
+    groups = forms.ModelMultipleChoiceField(widget=forms.CheckboxSelectMultiple,queryset=Group.objects.all())
+    # class Meta(object):
+    #     model = FilePermission
+    #     exclude = ()
+    #     widgets = {
+    #         'groups': CheckboxSelectMultiple
+    #     }
 
 class FilePermissionAdmin(admin.ModelAdmin):
     # list_display = ('name', 'can_read', 'can_edit', 'everybody')

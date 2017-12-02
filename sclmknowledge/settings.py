@@ -25,8 +25,8 @@ DEFAULT_CHARSET= 'utf-8'
 SECRET_KEY = 'c@r!33k6o_jcclh0!$)y$%g3$2=%dcpl+-qk@k^5yp$f391ja#'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
-# DEBUG = True
+# DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['120.76.152.10','zsk.shcmerp.com', ]
 

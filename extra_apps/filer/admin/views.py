@@ -52,12 +52,15 @@ def make_folder(request, folder_id=None):
         new_folder_form = NewFolderForm(request.POST)
         if new_folder_form.is_valid():
             new_folder = new_folder_form.save(commit=False)
+            #  chenyu change edit 20171201
+            new_folder.save()
             if (folder or FolderRoot()).contains_folder(new_folder.name):
                 new_folder_form._errors['name'] = new_folder_form.error_class(
                     [_('Folder with this name already exists.')])
             else:
                 new_folder.parent = folder
-                new_folder.owner = request.user
+                #  chenyu change new_folder.owner = request.user
+                new_folder.owner = folder.owner.all()
                 new_folder.save()
                 return render(request, 'admin/filer/dismiss_popup.html')
     else:

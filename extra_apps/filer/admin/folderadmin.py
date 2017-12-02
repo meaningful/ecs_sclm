@@ -68,8 +68,8 @@ class AddFolderPopupForm(forms.ModelForm):
         model = Folder
         fields = ('name',)
 
-# class FolderForm(forms.ModelForm):
-    # owner = forms.ModelMultipleChoiceField(widget=forms.CheckboxSelectMultiple,queryset=User.objects.all())
+class FolderForm(forms.ModelForm):
+    owner = forms.ModelMultipleChoiceField(widget=forms.CheckboxSelectMultiple,queryset=User.objects.all())
     # owner = forms.ChoiceField(widget=forms.CheckboxInput)
 
 
@@ -89,7 +89,7 @@ class FolderAdmin(PrimitivePermissionAwareModelAdmin):
                 # 'resize_images',
                'rename_files']
 
-    # form = FolderForm
+    form = FolderForm
     directory_listing_template = 'admin/filer/folder/directory_listing.html'
     order_by_file_fields = ('_file_size', 'original_filename', 'name', 'owner',
                             'uploaded_at', 'modified_at')
@@ -131,6 +131,7 @@ class FolderAdmin(PrimitivePermissionAwareModelAdmin):
         the object is being changed, and False if it's being added.
         """
         r = form.save(commit=False)
+        # r.save()
         parent_id = request.GET.get('parent_id', None)
         if not parent_id:
             parent_id = request.POST.get('parent_id', None)
