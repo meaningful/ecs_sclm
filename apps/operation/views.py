@@ -324,7 +324,7 @@ def search(request):
             filelist = File.objects.filter(Q(name__icontains=search_text)&(Q(ispublic="True"))).distinct()
         listoffiledir=list(filelist)
         folderlist = {}
-        template = loader.get_template('wxWeb/index2.html')
+        template = loader.get_template('wxWeb/index.html')
         context = Context({
         'filepath': listoffiledir,
         'foldlist': folderlist,
