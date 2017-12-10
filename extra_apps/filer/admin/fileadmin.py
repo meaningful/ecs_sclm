@@ -184,20 +184,33 @@ class FileAdmin(PrimitivePermissionAwareModelAdmin):
     display_canonical.allow_tags = True
     display_canonical.short_description = _('canonical URL')
 
-    #############chenyu change
-    # def formfield_for_foreignkey(self, db_field, request, **kwargs):
-    #     if not request.user.is_superuser:  
-    #         if db_field.name == "perm":
-    #             qs = FilePermission.objects.all()
-    #             group_ids = request.user.groups.all().values_list('id', flat=True)
-    #             q = Q(groups__in=group_ids) | Q(everybody=True)
-    #             kwargs['queryset'] = qs.filter(q).distinct()
-    #     return super(FileAdmin,self).formfield_for_foreignkey(db_field, request, **kwargs)        
+    #############chenyu change 20171203 used
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if not request.user.is_superuser:  
+            if db_field.name == "perm":
+                qs = FilePermission.objects.all()
+                group_ids = request.user.groups.all().values_list('id', flat=True)
+                q = Q(groups__in=group_ids) | Q(everybody=True)
+                kwargs['queryset'] = qs.filter(q).distinct()
+        return super(FileAdmin,self).formfield_for_foreignkey(db_field, request, **kwargs)        
 
 
 
-class FilePermissionAdminChangeFrom(forms.ModelForm):
-    groups = forms.ModelMultipleChoiceField(widget=forms.CheckboxSelectMultiple,queryset=Group.objects.all())
+class FilePermissionAdminChangeForm(forms.ModelForm):
+    # 20171203 chenyu change
+    # groups = forms.ModelMultipleChoiceField(label=u'组', widget=CheckboxSelectMultiple,queryset=Group.objects.all())
+    # groups = forms.ModelMultipleChoiceField(label=u'组', widget=CheckboxSelectMultiple,queryset=request.user.groups.all())
+    def __init__(self,*args, **kwargs):
+        super(FilePermissionAdminChangeForm,self).__init__(*args, **kwargs)
+        # request = kwargs.pop('request')
+        request = self.request
+        groups = None
+        if request.user.is_superuser:
+            groups = Group.objects.all()
+        else:
+            groups = request.user.groups.all()
+        # self.fields['groups']=forms.ModelMultipleChoiceField(queryset=groups, widget=CheckboxSelectMultiple,label=u'组')
+        self.fields['groups']=forms.ModelMultipleChoiceField(queryset=groups, label=u'组')
     # class Meta(object):
     #     model = FilePermission
     #     exclude = ()
@@ -205,28 +218,43 @@ class FilePermissionAdminChangeFrom(forms.ModelForm):
     #         'groups': CheckboxSelectMultiple
     #     }
 
+    # def get_group(self,request):
+    #     qs = Group.objects.all()
+    #     if request.user.is_superuser:
+    #         return qs
+    #     else:
+    #         qs = request.user.groups.all()
+    #         return qs
+
 class FilePermissionAdmin(admin.ModelAdmin):
     # list_display = ('name', 'can_read', 'can_edit', 'everybody')
     list_display = ('name', )
     search_fields = ['name']
-    form = FilePermissionAdminChangeFrom
+    form = FilePermissionAdminChangeForm
     # fields = ('name', 'can_read', 'can_edit', 'everybody', 'groups')
     fields = ('name', 'groups')
     #  chenyu change
     # def get_queryset(self, request):
-    #     qs = super(FilePermissionAdmin, self).get_queryset(request)
-    #     if request.user.is_superuser:
-    #         return qs
-    #     else:
-    #         group_ids = request.user.groups.all().values_list('id', flat=True)
-    #         q = Q(groups__in=group_ids) | Q(everybody=True)
-    #         return qs.filter(q).distinct()
-    # def formfield_for_manytomany(self, db_field, request, **kwargs):
-    #     if not request.user.is_superuser:  
-    #         if db_field.name == "groups":
-    #             group_ids = request.user.groups.all().values_list('name', flat=True)
-    #             kwargs["queryset"] = group_ids
-    #     return super(FilePermissionAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
+    def get_form(self, request, obj=None, **kwargs):
+        form = super(FilePermissionAdmin, self).get_form(request, obj, **kwargs)
+        form.request = request
+        return form
+    
+    # def get_queryset(self, request):
+    def queryset(self, request):
+        qs = super(FilePermissionAdmin, self).get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        else:
+            group_ids = request.user.groups.all().values_list('id', flat=True)
+            q = Q(groups__in=group_ids) | Q(everybody=True)
+            return qs.filter(q).distinct()
+    def formfield_for_manytomany(self, db_field, request, **kwargs):
+        if not request.user.is_superuser:  
+            if db_field.name == "groups":
+                group_ids = request.user.groups.all().values_list('name', flat=True)
+                kwargs["queryset"] = group_ids
+        return super(FilePermissionAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
 
     
 FileAdmin.fieldsets = FileAdmin.build_fieldsets()

@@ -336,7 +336,10 @@ class File(PolymorphicModel, mixins.IconsMixin):
                 return False
             elif user.is_superuser:
                 return True
+            ######  20171203 chenyu change  
             elif user == self.owner:
+                return 'All'
+            elif user in self.folder.owner.all():
                 return True
             else:
                 if not hasattr(self, "permission_cache") or\
